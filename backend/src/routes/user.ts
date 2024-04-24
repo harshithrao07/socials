@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { z } from "zod";
 import { sign } from "hono/jwt";
+import { signupInput, signinInput } from "harshithrao07-common-app";
 
 export const userRouter = new Hono<{
   Bindings: {
@@ -11,15 +11,9 @@ export const userRouter = new Hono<{
   };
 }>();
 
-const signUpBody = z.object({
-  email: z.string().email(),
-  name: z.string(),
-  password: z.string().min(8),
-});
-
 userRouter.post("/signup", async (c) => {
   const body = await c.req.json();
-  const { success } = signUpBody.safeParse(body);
+  const { success } = signupInput.safeParse(body);
 
   if (!success) {
     c.status(400);
@@ -68,14 +62,10 @@ userRouter.post("/signup", async (c) => {
   }
 });
 
-const signInBody = z.object({
-  email: z.string().email(),
-  password: z.string(),
-});
 
 userRouter.post("/signin", async (c) => {
   const body = await c.req.json();
-  const { success } = signInBody.safeParse(body);
+  const { success } = signinInput.safeParse(body);
 
   if (!success) {
     c.status(400);

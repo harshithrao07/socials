@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
+import { createPostInput, updatePostInput } from "harshithrao07-common-app";
 import { Hono } from "hono";
 import { verify } from "hono/jwt";
-import { z } from "zod";
 
 export const postRouter = new Hono<{
   Bindings: {
@@ -45,15 +45,10 @@ postRouter.use("/*", async (c, next) => {
 
 // Post Routes
 
-const postBody = z.object({
-  title: z.string(),
-  content: z.string(),
-});
-
-postRouter.post("/", async (c) => {
+postRouter.post("/upload", async (c) => {
   const body = await c.req.json();
-  const { success } = postBody.safeParse(body);
- 
+  const { success } = createPostInput.safeParse(body);
+
   if (!success) {
     c.status(400);
     return c.json({
@@ -86,14 +81,9 @@ postRouter.post("/", async (c) => {
   }
 });
 
-const updatepostBody = z.object({
-  title: z.string().optional(),
-  content: z.string().optional(),
-});
-
-postRouter.put("/", async (c) => {
+postRouter.put("/update", async (c) => {
   const body = await c.req.json();
-  const { success } = updatepostBody.safeParse(body);
+  const { success } = updatePostInput.safeParse(body);
   if (!success) {
     c.status(400);
     return c.json({
@@ -155,9 +145,14 @@ postRouter.get("/bulk", async (c) => {
       datasourceUrl: c.env?.DATABASE_URL,
     }).$extends(withAccelerate());
 
-    const posts = await prisma.post.findMany({});
+    const posts = await prisma.post.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-    return c.json(posts);
+    c.status(200);
+    return c.json({ posts });
   } catch (error) {
     c.status(422);
     return c.json({ message: `Error fetching posts` });

@@ -1,0 +1,15 @@
+{
+  "name": "harshithrao07-common-app",
+  "version": "3.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "zod": "^3.23.4"
+  }
+}
