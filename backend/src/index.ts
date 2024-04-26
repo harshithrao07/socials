@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { userRouter } from "./routes/user";
 import { postRouter } from "./routes/post";
+import { cors } from "hono/cors";
 
 const app = new Hono<{
   Bindings: {
@@ -11,6 +12,12 @@ const app = new Hono<{
     userId: string;
   };
 }>();
+
+app.use(cors());
+
+app.get("/", (c) => {
+  return c.text("Hello, World!");
+})
 
 // User Routes
 app.route("/api/v1/user", userRouter);

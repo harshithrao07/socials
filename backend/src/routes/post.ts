@@ -145,14 +145,9 @@ postRouter.get("/bulk", async (c) => {
       datasourceUrl: c.env?.DATABASE_URL,
     }).$extends(withAccelerate());
 
-    const posts = await prisma.post.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    const posts = await prisma.post.findMany({});
 
-    c.status(200);
-    return c.json({ posts });
+    return c.json(posts);
   } catch (error) {
     c.status(422);
     return c.json({ message: `Error fetching posts` });
