@@ -57,7 +57,6 @@ postRouter.post("/upload", async (c) => {
   }
 
   const authorId = c.get("userId");
-  console.log(authorId);
 
   try {
     const prisma = new PrismaClient({
@@ -68,7 +67,9 @@ postRouter.post("/upload", async (c) => {
       data: {
         title: body.title,
         content: body.content,
-        authorId: authorId,
+        imagePreview: body.imagePreview,
+        tags: body.tags,
+        authorId: authorId
       },
     });
 
@@ -139,17 +140,3 @@ postRouter.get("/:id", async (c) => {
   }
 });
 
-postRouter.get("/bulk", async (c) => {
-  try {
-    const prisma = new PrismaClient({
-      datasourceUrl: c.env?.DATABASE_URL,
-    }).$extends(withAccelerate());
-
-    const posts = await prisma.post.findMany({});
-
-    return c.json(posts);
-  } catch (error) {
-    c.status(422);
-    return c.json({ message: `Error fetching posts` });
-  }
-});

@@ -14,18 +14,25 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
-  email    String @unique
-  name     String
-  password String
-  posts    Post[]
+  id         String @id @default(uuid())
+  email      String @unique
+  username   String @unique
+  name       String
+  password   String
+  posts      Post[] @relation("UserPosts")
+  savedPosts Post[] @relation("UserSavedPosts")
+  followedBy User[] @relation("UserFollows")
+  following  User[] @relation("UserFollows")
 }
 
 model Post {
-  id        String   @id @default(uuid())
-  title     String
-  content   String
-  createdAt DateTime @default(now())
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String
+  id           String   @id @default(uuid())
+  title        String
+  content      String
+  imagePreview String
+  tags         String[]
+  createdAt    DateTime @default(now())
+  author       User     @relation("UserPosts", fields: [authorId], references: [id])
+  authorId     String
+  savedBy      User[]   @relation("UserSavedPosts")
 }
