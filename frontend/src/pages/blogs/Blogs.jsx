@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Button,
   Typography,
@@ -8,25 +8,79 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  IconButton,
   Chip,
 } from "@material-tailwind/react";
-
-const Home = () => {
+import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
+const Blogs = () => {
+  const POSTS_PER_PAGE = 9; // Number of posts per page
   const [posts, setPosts] = useState([]);
+  const [params, setParams] = useSearchParams();
+  const [totalPosts, setTotalPosts] = useState(9);
+  const page = parseInt(params.get("page"), 10);
+
+  const [active, setActive] = React.useState(page);
+  const [loading, setLoading] = React.useState(false);
+
+  const getItemProps = (index) => ({
+    variant: active === index ? "filled" : "text",
+    color: "gray",
+    onClick: () => setActive(index),
+    className: "rounded-full",
+  });
+
+  const next = () => {
+    const nextPage = parseInt(active, 10) + 1;
+    if (nextPage > 5) return;
+
+    setActive(nextPage);
+    setParams({ page: nextPage });
+  };
+
+  const prev = () => {
+    const prevPage = parseInt(active, 10) - 1;
+    if (prevPage < 1) return;
+
+    setActive(prevPage);
+    setParams({ page: prevPage });
+  };
 
   useEffect(() => {
     async function fetchPosts() {
+      setLoading(true);
+
       try {
-        const response = await axios.get("http://127.0.0.1:8787/api/v1/posts/");
+        const response = await axios.get(
+          `http://127.0.0.1:8787/api/v1/posts/?page=${active}`
+        );
         setPosts(response.data);
-        console.log(response.data);
+        // Extract total count from response headers
+        console.log(response);
+        const totalCount = response.headers["x-total-count"]; // Case-insensitive access
+        console.log("Total Posts:", totalCount);
+        setTotalPosts(totalCount);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchPosts();
-  }, []);
+  }, [active, params]);
+
+  // Calculate total number of pages based on total number of posts and posts per page
+  const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
+  console.log(totalPages);
+  // Generate pagination buttons dynamically based on total number of pages
+  const paginationButtons = [];
+  for (let i = 1; i <= totalPages; i++) {
+    paginationButtons.push(
+      <IconButton key={i} {...getItemProps(i)}>
+        {i}
+      </IconButton>
+    );
+  }
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -40,37 +94,15 @@ const Home = () => {
 
   return (
     <div>
-      <div className=" h-[30rem] font-200 px-12 title-container text-white mx-6 rounded-xl mt-3 grid grid-cols-2">
-        <div className="flex flex-col justify-center">
-          <span className="text-7xl font-semibold">Stay curious.</span>
-          <span className="mt-12 text-2xl font-light">
-            Discover stories, thinking, and expertise from writers on any topic.
-          </span>
-        </div>
-        <div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-50 h-50 top-18"
-          >
-            <path
-              fillRule="evenodd"
-              d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
-      </div>
-      {posts.length > 0 ? (
-        <div className="relative group">
-          <div className="grid grid-cols-3 mt-10 gap-10 mx-12 group">
-            {posts.slice(0, 3).map((post, index) => (
-              <div className="flex flex-col" key={index}>
+      {posts.length > 0 && loading === false ? (
+        <div className="grid grid-cols-3 mt-10 gap-10 mx-12">
+          {posts.map((post, index) => (
+            <Link to={`/blogs/${post.id}`} key={index}>
+              <div className="flex flex-col group">
                 <img
                   src={post.imagePreview}
                   alt={post.title}
-                  className="w-full rounded-lg h-[250px] object-cover"
+                  className="w-full rounded-lg h-[250px] object-cover group-hover:scale-105 duration-300 transform-gpu"
                 />
                 <div className="flex justify-start items-center text-sm font-semibold gap-x-2 text-gray-700 font-200 my-3">
                   <span>{post.author.name}</span>
@@ -88,22 +120,10 @@ const Home = () => {
                   </svg>
                   <span>{formatDate(post.createdAt)}</span>
                 </div>
-                <span className="text-gray-900 font-semibold mb-3 text-md flex items-center opacity-80">
-                  {post.title.substring(0, 40)}...&nbsp;
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    className="w-4 h-4"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.22 11.78a.75.75 0 0 1 0-1.06L9.44 5.5H5.75a.75.75 0 0 1 0-1.5h5.5a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0V6.56l-5.22 5.22a.75.75 0 0 1-1.06 0Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                <span className="text-gray-900 font-semibold mb-2 text-md flex items-center opacity-80">
+                  {post.title}
                 </span>
-                <div className="flex flex-wrap gap-1.5 my-2 opacity-80 mb-5">
+                <div className="flex flex-wrap gap-1.5 opacity-80 mb-5">
                   {post.tags.map((tag, index) => {
                     return (
                       <Chip
@@ -116,40 +136,12 @@ const Home = () => {
                   })}
                 </div>
               </div>
-            ))}
-          </div>
-          <div className="flex bg-gradient-to-b from-transparent to-white justify-center mt-3 h-5/6 absolute w-full -bottom-20 items-center opacity-0 group-hover:opacity-100 group-hover:-translate-y-20 duration-500 ease-in-out">
-            <Link
-              to="/blogs?page=1"
-              className="h-fit w-fit justify-center items-center flex"
-            >
-              <Button
-                variant="gradient"
-                size="lg"
-                className="rounded-full w-fit flex items-center hover:scale-110 transform-gpu duration-300 h-fit"
-              >
-                <span className="font-200">View More</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-4 h-4 ml-1"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5"
-                  />
-                </svg>
-              </Button>
             </Link>
-          </div>
+          ))}
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-16 mx-16 mb-16">
-          {[1, 2, 3].map((_, index) => (
+          {[...Array(9)].map((_, index) => (
             <Card key={index} className="mt-6 w-96 animate-pulse">
               <CardHeader
                 shadow={false}
@@ -221,8 +213,28 @@ const Home = () => {
           ))}
         </div>
       )}
+      <div className="flex items-center gap-4 justify-center mb-8">
+        <Button
+          variant="text"
+          className="flex items-center gap-2 rounded-full"
+          onClick={prev}
+          disabled={active === 1}
+        >
+          <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" /> Previous
+        </Button>
+        <div className="flex items-center gap-2">{paginationButtons}</div>
+        <Button
+          variant="text"
+          className="flex items-center gap-2 rounded-full"
+          onClick={next}
+          disabled={active === 5}
+        >
+          Next
+          <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 };
 
-export default Home;
+export default Blogs;

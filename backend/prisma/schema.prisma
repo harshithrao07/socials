@@ -29,7 +29,7 @@ model Post {
   id           String   @id @default(uuid())
   title        String
   content      String
-  imagePreview String
+  imagePreview String?
   tags         String[]
   createdAt    DateTime @default(now())
   author       User     @relation("UserPosts", fields: [authorId], references: [id])
