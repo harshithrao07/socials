@@ -33,16 +33,11 @@ export const createPostInput = z.object({
 export type CreatePostType = z.infer<typeof createPostInput>;
 
 export const updatePostInput = z.object({
-  title: z.string().optional().refine((value) => !value || value.trim() !== '', {
-    message: 'Title cannot be empty',
-    path: ['title'],
-  }),
-  content: z.string().optional().refine((value) => !value || value.trim() !== '', {
-    message: 'Content cannot be empty',
-    path: ['content'],
-  }),
+  title: z.string().optional(),
+  content: z.string().optional(),
   imagePreview: z.string().url().optional(),
-  tags: z.array(z.string()).optional()
+  tags: z.array(z.string()).optional(),
+  savedBy: z.string().optional()
 });
 
 

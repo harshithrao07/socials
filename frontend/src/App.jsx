@@ -6,8 +6,11 @@ import Home from "./pages/Home";
 import BlogDetails from "./pages/blogs/BlogDetails";
 import Layout from "./pages/Layout";
 import Compose from "./pages/blogs/Compose";
-import Blogs from "./pages/blogs/Blogs";
-import Profile from "./pages/Profile";
+import AllBlogs from "./pages/blogs/AllBlogs";
+import ProfileHeader from "./components/ProfileHeader";
+import ProfileBlogs from "./pages/profile/ProfileBlogs";
+import RouteError from "./RouteError";
+import SavedBlogs from "./pages/profile/SavedBlogs";
 
 const App = () => {
   return (
@@ -18,10 +21,14 @@ const App = () => {
           <Route path="/signin" element={<Signin />} />
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/blogs" element={<Blogs />} />
+            <Route path="/blogs" element={<AllBlogs />} />
             <Route path="/blogs/:id" element={<BlogDetails />} />
             <Route path="/blogs/compose" element={<Compose />} />
-            <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/profile/:id" element={<ProfileHeader />}>
+              <Route index element={<ProfileBlogs />} />
+              <Route path="saved" element={<SavedBlogs />} />
+            </Route>
+            <Route path="*" element={<RouteError />} />
           </Route>
         </Routes>
       </BrowserRouter>

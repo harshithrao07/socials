@@ -15,7 +15,7 @@ export declare const signupInput: z.ZodObject<{
     name: string;
     password: string;
 }>;
-export type SignupType = z.infer<typeof signupInput>;
+export declare type SignupType = z.infer<typeof signupInput>;
 export declare const signinInput: z.ZodObject<{
     username: z.ZodString;
     password: z.ZodString;
@@ -26,7 +26,7 @@ export declare const signinInput: z.ZodObject<{
     username: string;
     password: string;
 }>;
-export type SigninType = z.infer<typeof signinInput>;
+export declare type SigninType = z.infer<typeof signinInput>;
 export declare const createPostInput: z.ZodObject<{
     title: z.ZodEffects<z.ZodString, string, string>;
     content: z.ZodEffects<z.ZodString, string, string>;
@@ -43,21 +43,24 @@ export declare const createPostInput: z.ZodObject<{
     imagePreview: string;
     tags: string[];
 }>;
-export type CreatePostType = z.infer<typeof createPostInput>;
+export declare type CreatePostType = z.infer<typeof createPostInput>;
 export declare const updatePostInput: z.ZodObject<{
-    title: z.ZodEffects<z.ZodOptional<z.ZodString>, string | undefined, string | undefined>;
-    content: z.ZodEffects<z.ZodOptional<z.ZodString>, string | undefined, string | undefined>;
+    title: z.ZodOptional<z.ZodString>;
+    content: z.ZodOptional<z.ZodString>;
     imagePreview: z.ZodOptional<z.ZodString>;
     tags: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    savedBy: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     title?: string | undefined;
     content?: string | undefined;
     imagePreview?: string | undefined;
     tags?: string[] | undefined;
+    savedBy?: string | undefined;
 }, {
     title?: string | undefined;
     content?: string | undefined;
     imagePreview?: string | undefined;
     tags?: string[] | undefined;
+    savedBy?: string | undefined;
 }>;
-export type UpdatePostInput = z.infer<typeof updatePostInput>;
+export declare type UpdatePostInput = z.infer<typeof updatePostInput>;

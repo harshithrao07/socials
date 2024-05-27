@@ -186,6 +186,47 @@ app.get("/api/v1/auth/me", async (c) => {
         email: true,
         name: true,
         username: true,
+        savedPosts: {
+          include: {
+            author: true,
+          },
+        },
+        followedBy: true,
+        following: true,
+      },
+    });
+
+    return c.json(user);
+  } catch (error) {
+    c.status(404);
+    return c.json({
+      message: "User does not exist",
+    });
+  }
+});
+
+app.get("/api/v1/profile/:id", async (c) => {
+  const { id } = c.req.param();
+
+  try {
+    const prisma = new PrismaClient({
+      datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        username: true,
+        posts: {
+          include: {
+            author: true,
+          },
+        },
       },
     });
 
@@ -253,23 +294,147 @@ app.put("/api/v1/auth/posts", async (c) => {
       datasourceUrl: c.env?.DATABASE_URL,
     }).$extends(withAccelerate());
 
-    const updatedpost = await prisma.post.update({
-      where: {
-        id: body.id,
-        authorId: authorId,
-      },
-      data: {
-        title: body.title,
-        content: body.content,
-      },
+    // Fetch the existing post
+    const existingPost = await prisma.post.findUnique({
+      where: { id: body.id },
+      include: { savedBy: true },
     });
 
+    if (!existingPost) {
+      c.status(404);
+      return c.json({ message: "Post not found" });
+    }
+
+    // Check if the userId is already in the savedBy array
+    const isUserSaved = existingPost.savedBy.some(
+      (user) => user.id === body.savedBy
+    );
+
+    let updatedPost;
+    if (isUserSaved) {
+      // Disconnect the userId
+      updatedPost = await prisma.post.update({
+        where: { id: body.id },
+        data: {
+          title: body.title,
+          content: body.content,
+          imagePreview: body.imagePreview,
+          tags: body.tags,
+          savedBy: {
+            disconnect: { id: body.savedBy },
+          },
+        },
+      });
+    } else {
+      // Connect the userId
+      updatedPost = await prisma.post.update({
+        where: { id: body.id },
+        data: {
+          title: body.title,
+          content: body.content,
+          imagePreview: body.imagePreview,
+          tags: body.tags,
+          savedBy: {
+            connect: { id: body.savedBy },
+          },
+        },
+      });
+    }
+
     return c.json({
-      id: updatedpost.id,
+      id: updatedPost.id,
     });
   } catch (error) {
     c.status(422);
     return c.json({ message: "Error while updating post" });
+  }
+});
+
+app.put("/api/v1/auth/profile/:id/follow", async (c) => {
+  const profileId = c.req.param("id");
+  const userId = c.get("userId");
+
+  try {
+    const prisma = new PrismaClient({
+      datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    // Check if the user is already following the profile
+    const isFollowing = await prisma.user.findFirst({
+      where: {
+        id: userId,
+        following: {
+          some: {
+            id: profileId,
+          },
+        },
+      },
+    });
+
+    let response;
+
+    if (isFollowing) {
+      // If the user is already following, unfollow
+      response = await Promise.all([
+        prisma.user.update({
+          where: {
+            id: profileId,
+          },
+          data: {
+            followedBy: {
+              disconnect: {
+                id: userId,
+              },
+            },
+          },
+        }),
+        prisma.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            following: {
+              disconnect: {
+                id: profileId,
+              },
+            },
+          },
+        }),
+      ]);
+    } else {
+      // If the user is not following, follow
+      response = await Promise.all([
+        prisma.user.update({
+          where: {
+            id: profileId,
+          },
+          data: {
+            followedBy: {
+              connect: {
+                id: userId,
+              },
+            },
+          },
+        }),
+        prisma.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            following: {
+              connect: {
+                id: profileId,
+              },
+            },
+          },
+        }),
+      ]);
+    }
+
+    c.status(200);
+    return c.json({ response });
+  } catch (error) {
+    return c.json({ message: "Could not follow/unfollow the profile" });
   }
 });
 
@@ -297,7 +462,7 @@ app.get("/api/v1/posts/:id", async (c) => {
   }
 });
 
-app.get("/api/v1/posts/", async (c) => {
+app.get("/api/v1/posts", async (c) => {
   try {
     const page = parseInt(c.req.query("page") as string, 10) || 1;
     const perPage = 9;
@@ -323,9 +488,6 @@ app.get("/api/v1/posts/", async (c) => {
 
     c.header("X-Total-Count", totalCount.toString());
     c.header("Access-Control-Expose-headers", "X-Total-Count");
-
-    // Log response headers
-    console.log("Response Headers:", c.req.header("X-Total-Count"));
 
     return c.json(posts); // Return the array of posts directly
   } catch (error) {

@@ -1,6 +1,5 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 import {
   Button,
   Typography,
@@ -8,101 +7,25 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
-  IconButton,
   Chip,
 } from "@material-tailwind/react";
-import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
-const Blogs = () => {
-  const POSTS_PER_PAGE = 9; // Number of posts per page
-  const [posts, setPosts] = useState([]);
-  const [params, setParams] = useSearchParams();
-  const [totalPosts, setTotalPosts] = useState(9);
-  const page = parseInt(params.get("page"), 10);
+import { formatDate } from "../helper";
 
-  const [active, setActive] = React.useState(page);
-  const [loading, setLoading] = React.useState(false);
-
-  const getItemProps = (index) => ({
-    variant: active === index ? "filled" : "text",
-    color: "gray",
-    onClick: () => setActive(index),
-    className: "rounded-full",
-  });
-
-  const next = () => {
-    const nextPage = parseInt(active, 10) + 1;
-    if (nextPage > 5) return;
-
-    setActive(nextPage);
-    setParams({ page: nextPage });
-  };
-
-  const prev = () => {
-    const prevPage = parseInt(active, 10) - 1;
-    if (prevPage < 1) return;
-
-    setActive(prevPage);
-    setParams({ page: prevPage });
-  };
-
-  useEffect(() => {
-    async function fetchPosts() {
-      setLoading(true);
-
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8787/api/v1/posts/?page=${active}`
-        );
-        setPosts(response.data);
-        // Extract total count from response headers
-        console.log(response);
-        const totalCount = response.headers["x-total-count"]; // Case-insensitive access
-        console.log("Total Posts:", totalCount);
-        setTotalPosts(totalCount);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchPosts();
-  }, [active, params]);
-
-  // Calculate total number of pages based on total number of posts and posts per page
-  const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
-  console.log(totalPages);
-  // Generate pagination buttons dynamically based on total number of pages
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <IconButton key={i} {...getItemProps(i)}>
-        {i}
-      </IconButton>
-    );
-  }
-
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-    const formatter = new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-    return formatter.format(date);
-  }
+const Blogs = ({ posts, isLoading, from }) => {
 
   return (
     <div>
-      {posts.length > 0 && loading === false ? (
-        <div className="grid grid-cols-3 mt-10 gap-10 mx-12">
+      {posts && posts.length > 0 && isLoading === false ? (
+        <div className="grid grid-cols-3 mt-10 gap-10 mx-12 relative group/main">
           {posts.map((post, index) => (
             <Link to={`/blogs/${post.id}`} key={index}>
-              <div className="flex flex-col group">
+              <div
+                className={`flex flex-col ${from !== "Home" && "group/img"}`}
+              >
                 <img
                   src={post.imagePreview}
                   alt={post.title}
-                  className="w-full rounded-lg h-[250px] object-cover group-hover:scale-105 duration-300 transform-gpu"
+                  className="w-full rounded-lg h-[250px] object-cover group-hover/img:scale-105 duration-300 transform-gpu"
                 />
                 <div className="flex justify-start items-center text-sm font-semibold gap-x-2 text-gray-700 font-200 my-3">
                   <span>{post.author.name}</span>
@@ -138,10 +61,41 @@ const Blogs = () => {
               </div>
             </Link>
           ))}
+          {from === "Home" && (
+            <div className="flex bg-gradient-to-b from-transparent to-white justify-center mt-3 h-5/6 absolute w-full -bottom-20 items-center opacity-0 group-hover/main:opacity-100 group-hover/main:-translate-y-20 duration-500 ease-in-out">
+              <Link
+                to="/blogs?page=1"
+                className="h-fit w-fit justify-center items-center flex"
+              >
+                <Button
+                  variant="gradient"
+                  size="lg"
+                  className="rounded-full w-fit flex items-center hover:scale-110 transform-gpu duration-300 h-fit"
+                >
+                  <span className="font-200">View More</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-4 h-4 ml-1"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5"
+                    />
+                  </svg>
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-16 mx-16 mb-16">
-          {[...Array(9)].map((_, index) => (
+        isLoading === true &&
+        <div className="grid grid-cols-3 mx-16 gap-5 mb-16">
+          {[...Array(from === "Home" ? 3 : 9)].map((_, index) => (
             <Card key={index} className="mt-6 w-96 animate-pulse">
               <CardHeader
                 shadow={false}
@@ -213,26 +167,6 @@ const Blogs = () => {
           ))}
         </div>
       )}
-      <div className="flex items-center gap-4 justify-center mb-8">
-        <Button
-          variant="text"
-          className="flex items-center gap-2 rounded-full"
-          onClick={prev}
-          disabled={active === 1}
-        >
-          <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" /> Previous
-        </Button>
-        <div className="flex items-center gap-2">{paginationButtons}</div>
-        <Button
-          variant="text"
-          className="flex items-center gap-2 rounded-full"
-          onClick={next}
-          disabled={active === 5}
-        >
-          Next
-          <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
-        </Button>
-      </div>
     </div>
   );
 };

@@ -63,6 +63,17 @@ input {
   background: linear-gradient(135.8deg, rgb(26, 26, 29) 27.1%, rgb(111, 34, 50) 77.5%);
 }
 
+.profile-container {
+  background: #536976;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #292E49, #536976);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #292E49, #536976);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+
 .ql-editor {
   @apply font-100;
 }

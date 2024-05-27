@@ -10,12 +10,22 @@ import {
   Button,
 } from "@material-tailwind/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link, useNavigate } from "react-router-dom";
-import { useGetCurrentUserQuery } from "../app/service/user";
+import { Link } from "react-router-dom";
+import { useGetCurrentUserQuery } from "../app/service/socials";
+
 
 function NavList({ data, isLoading }) {
   return (
-    <ul className="my-2 flex flex-col gap-2 md:mb-0 md:mt-0 md:flex-row md:items-center md:gap-7">
+    <ul className="my-2 flex justify-center flex-col gap-2 md:mb-0 md:mt-0 md:flex-row md:items-center md:gap-7 font-200">
+      <Link to="/" className="text-gray-600 hover:text-black text-xl">
+        <span>Home</span>
+      </Link>
+      <Link
+        to="/blogs?page=1"
+        className="text-gray-600 hover:text-black text-xl"
+      >
+        <span>All Blogs</span>
+      </Link>
       <Link to="/blogs/compose">
         <div className="flex items-center justify-center gap-x-1 text-gray-600 hover:text-black cursor-pointer">
           <svg
@@ -48,7 +58,7 @@ function NavList({ data, isLoading }) {
               </div>
             </MenuHandler>
             {data && (
-              <MenuList>
+              <MenuList className="font-200">
                 <MenuItem>
                   <Link
                     to={`/profile/${data.id}`}
@@ -73,21 +83,26 @@ function NavList({ data, isLoading }) {
                   </Link>
                 </MenuItem>
                 <MenuItem className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-4 h-4 mr-5"
+                  <Link
+                    to={`/profile/${data.id}/saved`}
+                    className="flex items-center"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-                    />
-                  </svg>
-                  <span>Saved</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-4 h-4 mr-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+                      />
+                    </svg>
+                    <span>Saved</span>
+                  </Link>
                 </MenuItem>
                 <MenuItem className="flex items-center">
                   <svg
@@ -107,28 +122,34 @@ function NavList({ data, isLoading }) {
                   <span>Following</span>
                 </MenuItem>
                 <MenuItem className="hover:bg-white">
-                  <Button
-                    size="sm"
-                    className="w-full opacity-70 hover:opacity-100"
-                    variant="outlined"
-                    onClick={() => {
-                      localStorage.clear();
-                    }}
-                  >
-                    Log Out
-                  </Button>
+                  <a href="/">
+                    <Button
+                      size="sm"
+                      className="w-full opacity-70 hover:opacity-100"
+                      variant="outlined"
+                      onClick={() => {
+                        localStorage.clear();
+                      }}
+                    >
+                      Log Out
+                    </Button>
+                  </a>
                 </MenuItem>
               </MenuList>
             )}
           </Menu>
+        ) : isLoading ? (
+          <></>
         ) : (
-          <Button
-            variant="outlined"
-            className="rounded-full font-200 font-medium text-gray-700 border-gray-700 hover:text-white hover:bg-black duration-300"
-            size="sm"
-          >
-            <Link to="/signin">Sign In</Link>
-          </Button>
+          <Link to="/signin">
+            <Button
+              variant="gradient"
+              className="rounded-full font-200 font-medium"
+              size="sm"
+            >
+              Sign In
+            </Button>
+          </Link>
         )}
       </div>
     </ul>
@@ -137,7 +158,6 @@ function NavList({ data, isLoading }) {
 
 export function NavBar() {
   const [openNav, setOpenNav] = React.useState(false);
-  const navigate = useNavigate();
   const { data, isError, isLoading } = useGetCurrentUserQuery();
 
   const handleWindowResize = () =>
@@ -152,7 +172,7 @@ export function NavBar() {
   }, []);
 
   return (
-    <Navbar className="mx-auto w-full px-8 py-2.5 shadow-none">
+    <Navbar className="w-full py-2.5 shadow-none">
       <div className="flex items-center justify-between text-blue-gray-900">
         <Link to="/">
           <div className="flex items-center">

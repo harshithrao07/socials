@@ -1,12 +1,23 @@
 import { Button, Chip, Spinner } from "@material-tailwind/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import "quill/dist/quill.snow.css";
+import { useGetCurrentUserQuery } from "../../app/service/socials";
 
 const BlogDetails = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
+  const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const { data, isError, isLoading } = useGetCurrentUserQuery();
+
+  useEffect(() => {
+    if (data && post) {
+      data.savedPosts.map((blog) => blog.id === post.id && setSaved(true));
+    }
+  }, [data, post]);
 
   useEffect(() => {
     async function fetchPost() {
@@ -33,32 +44,80 @@ const BlogDetails = () => {
     return formatter.format(date);
   }
 
+  const bookMarkPost = async () => {
+    const token = localStorage.getItem("token_socials");
+
+    if (!token) {
+      navigate("/signin?message=You have to sign up first!");
+    }
+
+    if (data) {
+      try {
+        setLoading(true);
+        const response = await axios.put(
+          "http://localhost:8787/api/v1/auth/posts",
+          {
+            id: post.id,
+            savedBy: data.id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token_socials")}`,
+            },
+          }
+        );
+
+        if (response.status == 200) {
+          if (saved == false) {
+            setSaved(true);
+          } else {
+            setSaved(false);
+          }
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+      }
+    }
+  };
+  console.log(post);
   return (
     <>
       {post ? (
         <div className="my-14 mx-20">
           <div className="flex flex-col items-center font-200">
+            {loading && (
+              <div className="flex justify-center items-center mb-6">
+                <Spinner className="h-8 w-8" />
+              </div>
+            )}
             <div className="flex items-center gap-x-3">
               <span className="text-4xl font-semibold text-gray-900 text-center">
                 {post.title}
               </span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-9 h-9 cursor-pointer hover:fill-black"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-                />
-              </svg>
+              {data && (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className={`w-9 h-9 cursor-pointer hover:fill-black ${
+                    saved === true && "fill-black"
+                  }`}
+                  onClick={bookMarkPost}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+                  />
+                </svg>
+              )}
             </div>
             <div className="flex justify-start items-center text-sm font-semibold gap-x-2 text-gray-700 font-200 my-5">
-              <span>{post.author.name}</span>
+              <Link className="underline" to={`/profile/${post.author.id}`}><span>{post.author.name}</span></Link>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
@@ -91,25 +150,68 @@ const BlogDetails = () => {
               className="rounded-lg w-3/4"
             />
           </div>
-          <div className="ql-editor my-5" dangerouslySetInnerHTML={{ __html: post.content }} />
+          <div
+            className="ql-editor my-5"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
           <div className="flex justify-center">
-            <Button className="rounded-full flex items-center gap-x-1" variant="outlined">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
+            {data && (
+              <Button
+                className="rounded-full flex items-center gap-x-1 hover:text-black hover:border-black"
+                variant="outlined"
+                onClick={bookMarkPost}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-                />
-              </svg>
-              <span className="text-lg">Save this article</span>
-            </Button>
+                {saved === false ? (
+                  loading ? (
+                    <>
+                      <Spinner className="h-5 w-5" />
+                      <span className="text-lg ml-2">Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+                        />
+                      </svg>
+                      <span className="text-lg">Save this article</span>
+                    </>
+                  )
+                ) : loading ? (
+                  <>
+                    <Spinner className="h-5 w-5" />
+                    <span className="text-lg ml-2">Unsaving...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                      />
+                    </svg>
+                    <span className="text-lg">Saved</span>
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
       ) : (

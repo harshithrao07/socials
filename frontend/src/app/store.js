@@ -1,13 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { currentUserApi } from "./service/user";
+import { socialsApi } from "./service/socials";
 
 export const store = configureStore({
     reducer: {
-        [currentUserApi.reducerPath] : currentUserApi.reducer
+        [socialsApi.reducerPath] : socialsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(currentUserApi.middleware),
+        getDefaultMiddleware().concat(socialsApi.middleware),
 })
+
+
 
 setupListeners(store.dispatch)

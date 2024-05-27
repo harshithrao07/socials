@@ -15,7 +15,7 @@
     "@reduxjs/toolkit": "^2.2.4",
     "aws-sdk": "^2.1613.0",
     "axios": "^1.6.8",
-    "harshithrao07-common-app": "^10.0.0",
+    "harshithrao07-common-app": "^11.0.0",
     "quill": "^2.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

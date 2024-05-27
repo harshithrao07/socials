@@ -25,14 +25,9 @@ exports.createPostInput = zod_1.z.object({
     tags: zod_1.z.array(zod_1.z.string())
 });
 exports.updatePostInput = zod_1.z.object({
-    title: zod_1.z.string().optional().refine((value) => !value || value.trim() !== '', {
-        message: 'Title cannot be empty',
-        path: ['title'],
-    }),
-    content: zod_1.z.string().optional().refine((value) => !value || value.trim() !== '', {
-        message: 'Content cannot be empty',
-        path: ['content'],
-    }),
+    title: zod_1.z.string().optional(),
+    content: zod_1.z.string().optional(),
     imagePreview: zod_1.z.string().url().optional(),
-    tags: zod_1.z.array(zod_1.z.string()).optional()
+    tags: zod_1.z.array(zod_1.z.string()).optional(),
+    savedBy: zod_1.z.string().optional()
 });
