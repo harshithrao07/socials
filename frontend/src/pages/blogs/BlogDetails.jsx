@@ -68,11 +68,7 @@ const BlogDetails = () => {
         );
 
         if (response.status == 200) {
-          if (saved == false) {
-            setSaved(true);
-          } else {
-            setSaved(false);
-          }
+          setSaved(!saved);
         }
         setLoading(false);
       } catch (error) {
@@ -81,32 +77,29 @@ const BlogDetails = () => {
       }
     }
   };
-  console.log(post);
+
   return (
     <>
       {post ? (
-        <div className="my-14 mx-20">
+        <div className="my-14 mx-4 lg:mx-20">
           <div className="flex flex-col items-center font-200">
             {loading && (
               <div className="flex justify-center items-center mb-6">
                 <Spinner className="h-8 w-8" />
               </div>
             )}
-            <div className="flex items-center gap-x-3">
-              <span className="text-4xl font-semibold text-gray-900 text-center">
+            <div className="flex flex-col items-center md:items-center gap-x-3">
+              <span className="text-2xl md:text-4xl font-semibold text-gray-900 text-center">
                 {post.title}
               </span>
-              {data && (
+              <div className="flex items-center justify-center mt-1">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className={`w-9 h-9 cursor-pointer hover:fill-black ${
-                    saved === true && "fill-black"
-                  }`}
-                  onClick={bookMarkPost}
+                  className={`w-5 h-5 md:w-5 md:h-5 fill-black`}
                 >
                   <path
                     strokeLinecap="round"
@@ -114,10 +107,13 @@ const BlogDetails = () => {
                     d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
                   />
                 </svg>
-              )}
+                <span className="text-md font-100 font-semibold">x{post?.savedBy.length}</span>
+              </div>
             </div>
             <div className="flex justify-start items-center text-sm font-semibold gap-x-2 text-gray-700 font-200 my-5">
-              <Link className="underline" to={`/profile/${post.author.id}`}><span>{post.author.name}</span></Link>
+              <Link className="underline" to={`/profile/${post.author.id}`}>
+                <span>{post.author.name}</span>
+              </Link>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
@@ -132,37 +128,39 @@ const BlogDetails = () => {
               </svg>
               <span>{formatDate(post.createdAt)}</span>
             </div>
-            <div className="flex flex-wrap gap-6 mb-12">
-              {post.tags.map((tag, index) => {
-                return (
-                  <Chip
-                    variant="outlined"
-                    value={tag}
-                    key={index}
-                    className="rounded-full lowercase capitalize font-normal text-sm text-black"
-                  />
-                );
-              })}
-            </div>
-            <img
-              src={post.imagePreview}
-              alt={post.title}
-              className="rounded-lg w-3/4"
-            />
-          </div>
-          <div
-            className="ql-editor my-5"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-          <div className="flex justify-center">
-            {data && (
-              <Button
-                className="rounded-full flex items-center gap-x-1 hover:text-black hover:border-black"
-                variant="outlined"
-                onClick={bookMarkPost}
-              >
-                {saved === false ? (
-                  loading ? (
+            <div className="flex justify-center">
+              {data && (
+                <Button
+                  className="rounded-full flex items-center gap-x-1 hover:text-black hover:border-black"
+                  variant="outlined"
+                  onClick={bookMarkPost}
+                >
+                  {saved ? (
+                    loading ? (
+                      <>
+                        <Spinner className="h-5 w-5" />
+                        <span className="text-lg ml-2">Unsaving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                          />
+                        </svg>
+                        <span className="text-lg">Saved</span>
+                      </>
+                    )
+                  ) : loading ? (
                     <>
                       <Spinner className="h-5 w-5" />
                       <span className="text-lg ml-2">Saving...</span>
@@ -185,34 +183,30 @@ const BlogDetails = () => {
                       </svg>
                       <span className="text-lg">Save this article</span>
                     </>
-                  )
-                ) : loading ? (
-                  <>
-                    <Spinner className="h-5 w-5" />
-                    <span className="text-lg ml-2">Unsaving...</span>
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                      />
-                    </svg>
-                    <span className="text-lg">Saved</span>
-                  </>
-                )}
-              </Button>
-            )}
+                  )}
+                </Button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2 md:gap-6 mb-12">
+              {post.tags.map((tag, index) => (
+                <Chip
+                  variant="outlined"
+                  value={tag}
+                  key={index}
+                  className="rounded-full lowercase capitalize font-normal text-sm text-black"
+                />
+              ))}
+            </div>
+            <img
+              src={post.imagePreview}
+              alt={post.title}
+              className="rounded-lg w-full md:w-3/4"
+            />
           </div>
+          <div
+            className="ql-editor my-5"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
         </div>
       ) : (
         <div className="flex h-screen justify-center items-center">

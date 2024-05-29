@@ -23,7 +23,7 @@ const ProfileNav = () => {
     useGetCurrentUserQuery();
   const navigate = useNavigate();
   const token = localStorage.getItem("token_socials");
-  const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [isCurrentUser, setIsCurrentUser] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dialogType, setDialogType] = useState("");
@@ -69,13 +69,13 @@ const ProfileNav = () => {
 
   return (
     <div>
-      <div className="h-[25rem] font-200 p-12 profile-container text-white mx-6 rounded-xl mt-3 grid grid-cols-2">
-        <div className="flex flex-col justify-end gap-y-3">
+      <div className="h-[25rem] font-200 profile-container text-white mx-6 rounded-xl mt-3 grid grid-cols-2">
+        <div className="flex flex-col justify-end gap-y-3 p-12">
           {profileData && !isProfileLoading ? (
             <>
               <span className="text-7xl">{profileData.name}</span>
               <span className="text-3xl">@{profileData.username}</span>
-              {currentUserData && !isCurrentUser ? (
+              { currentUserData && currentUserData?.id !== profileData?.id && !isCurrentUser ? (
                 <Button
                   onClick={toggleFollowOrUnfollowFunction}
                   color="white"
@@ -107,14 +107,14 @@ const ProfileNav = () => {
             )
           )}
         </div>
-        <div>
+        <div className="relative overflow-hidden">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={0.5}
             stroke="currentColor"
-            className="w-50 h-50 top-14 absolute"
+            className="w-50 h-50 top-18 absolute"
           >
             <path
               strokeLinecap="round"

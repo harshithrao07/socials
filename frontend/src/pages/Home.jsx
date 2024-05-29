@@ -7,19 +7,19 @@ const Home = () => {
 
   return (
     <div>
-      <div className=" h-[30rem] font-200 px-12 title-container text-white mx-6 rounded-xl mt-3 grid grid-cols-2">
-        <div className="flex flex-col justify-center">
-          <span className="text-7xl font-semibold">Stay curious.</span>
-          <span className="mt-12 text-2xl font-light">
+      <div className="h-[20rem] md:h-[30rem] font-200 px-6 md:px-12 title-container text-white mx-4 md:mx-6 rounded-xl mt-3 grid grid-cols-1 md:grid-cols-2">
+        <div className="flex flex-col justify-center p-3 text-center md:text-left">
+          <span className="text-3xl md:text-7xl font-semibold">Stay curious.</span>
+          <span className="mt-2 md:mt-12 text-md md:text-2xl font-light">
             Discover stories, thinking, and expertise from writers on any topic.
           </span>
         </div>
-        <div>
+        <div className="flex justify-center items-center mt-6 md:mt-0">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="w-50 h-50 top-18"
+            className="w-50 h-50"
           >
             <path
               fillRule="evenodd"

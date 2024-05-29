@@ -12,11 +12,10 @@ import {
 import { formatDate } from "../helper";
 
 const Blogs = ({ posts, isLoading, from }) => {
-
   return (
     <div>
       {posts && posts.length > 0 && isLoading === false ? (
-        <div className="grid grid-cols-3 mt-10 gap-10 mx-12 relative group/main">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-10 gap-5 lg:gap-10 mx-4 sm:mx-8 lg:mx-12 relative group/main">
           {posts.map((post, index) => (
             <Link to={`/blogs/${post.id}`} key={index}>
               <div
@@ -25,7 +24,7 @@ const Blogs = ({ posts, isLoading, from }) => {
                 <img
                   src={post.imagePreview}
                   alt={post.title}
-                  className="w-full rounded-lg h-[250px] object-cover group-hover/img:scale-105 duration-300 transform-gpu"
+                  className="w-full rounded-lg h-[200px] sm:h-[250px] object-cover group-hover/img:scale-105 duration-300 transform-gpu"
                 />
                 <div className="flex justify-start items-center text-sm font-semibold gap-x-2 text-gray-700 font-200 my-3">
                   <span>{post.author.name}</span>
@@ -47,22 +46,20 @@ const Blogs = ({ posts, isLoading, from }) => {
                   {post.title}
                 </span>
                 <div className="flex flex-wrap gap-1.5 opacity-80 mb-5">
-                  {post.tags.map((tag, index) => {
-                    return (
-                      <Chip
-                        variant="outlined"
-                        value={tag}
-                        key={index}
-                        className="rounded-ful px-1.5 border-gray-500 hover:border-black py-1 lowercase capitalize font-normal text-xs hover:text-black font-200"
-                      />
-                    );
-                  })}
+                  {post.tags.map((tag, index) => (
+                    <Chip
+                      variant="outlined"
+                      value={tag}
+                      key={index}
+                      className="rounded-full px-1.5 border-gray-500 hover:border-black py-1 lowercase capitalize font-normal text-xs hover:text-black font-200"
+                    />
+                  ))}
                 </div>
               </div>
             </Link>
           ))}
           {from === "Home" && (
-            <div className="flex bg-gradient-to-b from-transparent to-white justify-center mt-3 h-5/6 absolute w-full -bottom-20 items-center opacity-0 group-hover/main:opacity-100 group-hover/main:-translate-y-20 duration-500 ease-in-out">
+            <div className="hidden md:flex bg-gradient-to-b from-transparent to-white justify-center mt-3 h-5/6 absolute w-full -bottom-20 items-center opacity-0 group-hover/main:opacity-100 group-hover/main:-translate-y-20 duration-500 ease-in-out">
               <Link
                 to="/blogs?page=1"
                 className="h-fit w-fit justify-center items-center flex"
@@ -93,79 +90,80 @@ const Blogs = ({ posts, isLoading, from }) => {
           )}
         </div>
       ) : (
-        isLoading === true &&
-        <div className="grid grid-cols-3 mx-16 gap-5 mb-16">
-          {[...Array(from === "Home" ? 3 : 9)].map((_, index) => (
-            <Card key={index} className="mt-6 w-96 animate-pulse">
-              <CardHeader
-                shadow={false}
-                floated={false}
-                className="relative grid h-56 place-items-center bg-gray-300"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  className="h-12 w-12 text-gray-500"
+        isLoading === true && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mx-4 sm:mx-8 lg:mx-12 gap-5 lg:gap-10 mb-16">
+            {[...Array(from === "Home" ? 3 : 9)].map((_, index) => (
+              <Card key={index} className="mt-6 w-full sm:w-80 lg:w-96 animate-pulse">
+                <CardHeader
+                  shadow={false}
+                  floated={false}
+                  className="relative grid h-56 place-items-center bg-gray-300"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                  />
-                </svg>
-              </CardHeader>
-              <CardBody>
-                <Typography
-                  as="div"
-                  variant="h1"
-                  className="mb-4 h-3 w-56 rounded-full bg-gray-300"
-                >
-                  &nbsp;
-                </Typography>
-                <Typography
-                  as="div"
-                  variant="paragraph"
-                  className="mb-2 h-2 w-full rounded-full bg-gray-300"
-                >
-                  &nbsp;
-                </Typography>
-                <Typography
-                  as="div"
-                  variant="paragraph"
-                  className="mb-2 h-2 w-full rounded-full bg-gray-300"
-                >
-                  &nbsp;
-                </Typography>
-                <Typography
-                  as="div"
-                  variant="paragraph"
-                  className="mb-2 h-2 w-full rounded-full bg-gray-300"
-                >
-                  &nbsp;
-                </Typography>
-                <Typography
-                  as="div"
-                  variant="paragraph"
-                  className="mb-2 h-2 w-full rounded-full bg-gray-300"
-                >
-                  &nbsp;
-                </Typography>
-              </CardBody>
-              <CardFooter className="pt-0">
-                <Button
-                  disabled
-                  tabIndex={-1}
-                  className="h-8 w-20 bg-gray-300 shadow-none hover:shadow-none"
-                >
-                  &nbsp;
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="h-12 w-12 text-gray-500"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+                    />
+                  </svg>
+                </CardHeader>
+                <CardBody>
+                  <Typography
+                    as="div"
+                    variant="h1"
+                    className="mb-4 h-3 w-56 rounded-full bg-gray-300"
+                  >
+                    &nbsp;
+                  </Typography>
+                  <Typography
+                    as="div"
+                    variant="paragraph"
+                    className="mb-2 h-2 w-full rounded-full bg-gray-300"
+                  >
+                    &nbsp;
+                  </Typography>
+                  <Typography
+                    as="div"
+                    variant="paragraph"
+                    className="mb-2 h-2 w-full rounded-full bg-gray-300"
+                  >
+                    &nbsp;
+                  </Typography>
+                  <Typography
+                    as="div"
+                    variant="paragraph"
+                    className="mb-2 h-2 w-full rounded-full bg-gray-300"
+                  >
+                    &nbsp;
+                  </Typography>
+                  <Typography
+                    as="div"
+                    variant="paragraph"
+                    className="mb-2 h-2 w-full rounded-full bg-gray-300"
+                  >
+                    &nbsp;
+                  </Typography>
+                </CardBody>
+                <CardFooter className="pt-0">
+                  <Button
+                    disabled
+                    tabIndex={-1}
+                    className="h-8 w-20 bg-gray-300 shadow-none hover:shadow-none"
+                  >
+                    &nbsp;
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )
       )}
     </div>
   );

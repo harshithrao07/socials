@@ -6,7 +6,7 @@ const currentYear = new Date().getFullYear();
 export function FooterWithSitemap() {
   return (
     <footer className="relative w-full">
-      <div className="border-t-2 border-black mx-8 py-2">
+      <div className="border-t-2 border-black mx-8  md:py-2 flex justify-center md:justify-start">
         <Link to="/">
           <div className="flex items-center">
             <img className="w-12" src="/src/assets/logo.png" alt="logo" />

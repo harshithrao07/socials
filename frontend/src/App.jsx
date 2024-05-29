@@ -11,6 +11,7 @@ import ProfileHeader from "./components/ProfileHeader";
 import ProfileBlogs from "./pages/profile/ProfileBlogs";
 import RouteError from "./RouteError";
 import SavedBlogs from "./pages/profile/SavedBlogs";
+import Feed from "./pages/profile/Feed";
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
             <Route path="/profile/:id" element={<ProfileHeader />}>
               <Route index element={<ProfileBlogs />} />
               <Route path="saved" element={<SavedBlogs />} />
+              <Route path="feed" element={<Feed />} />              
             </Route>
             <Route path="*" element={<RouteError />} />
           </Route>

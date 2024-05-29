@@ -13,7 +13,6 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import { useGetCurrentUserQuery } from "../app/service/socials";
 
-
 function NavList({ data, isLoading }) {
   return (
     <ul className="my-2 flex justify-center flex-col gap-2 md:mb-0 md:mt-0 md:flex-row md:items-center md:gap-7 font-200">
@@ -26,7 +25,7 @@ function NavList({ data, isLoading }) {
       >
         <span>All Blogs</span>
       </Link>
-      <Link to="/blogs/compose">
+      <Link to="/blogs/compose" className="w-fit">
         <div className="flex items-center justify-center gap-x-1 text-gray-600 hover:text-black cursor-pointer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -105,21 +104,26 @@ function NavList({ data, isLoading }) {
                   </Link>
                 </MenuItem>
                 <MenuItem className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-4 h-4 mr-5"
+                  <Link
+                    to={`/profile/${data.id}/feed`}
+                    className="flex items-center"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-                    />
-                  </svg>
-                  <span>Following</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-4 h-4 mr-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                      />
+                    </svg>
+                    <span>Feed</span>
+                  </Link>
                 </MenuItem>
                 <MenuItem className="hover:bg-white">
                   <a href="/">
@@ -199,7 +203,7 @@ export function NavBar() {
         </IconButton>
       </div>
       <Collapse open={openNav}>
-        <NavList />
+        <NavList data={data} isLoading={isLoading} />
       </Collapse>
     </Navbar>
   );
