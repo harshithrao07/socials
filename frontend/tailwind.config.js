@@ -8,6 +8,7 @@ module.exports = withMT({
       fontFamily: {
         100: "Merriweather",
         200: "Poppins",
+        300: "Overpass"
       },
     },
   },

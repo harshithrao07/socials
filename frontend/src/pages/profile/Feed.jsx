@@ -25,7 +25,7 @@ const Feed = () => {
 
   return (
     <div className="mx-8 my-4">
-      <span className="font-100 text-3xl pb-0.5 border-b border-black">
+      <span className="font-300 text-3xl pb-0.5 border-b-2 border-black">
         Your Feed:
       </span>
       {posts.map((post) => (

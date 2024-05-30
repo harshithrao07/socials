@@ -1,13 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100..900;1,100..900&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  font-family: 'Roboto';
+  font-family: "Roboto";
 }
 
 /* For WebKit (Chrome, Safari, etc.) */
@@ -39,20 +40,18 @@ body {
   /* Radius of the scrollbar thumb */
 }
 
-
-
 label {
-  @apply font-semibold mt-3
+  @apply font-semibold mt-3;
 }
 
 input {
-  @apply border rounded-sm px-2 py-1 w-80 mt-1
+  @apply border rounded-sm px-2 py-1 w-80 mt-1;
 }
 
 .blog-input {
   caret-color: rgb(173, 173, 173);
-  font-family: 'Merriweather';
-  border-left: 1px solid transparent
+  font-family: "Merriweather";
+  border-left: 1px solid transparent;
 }
 
 .blog-input:focus {
@@ -60,19 +59,24 @@ input {
 }
 
 .title-container {
-  background: linear-gradient(135.8deg, rgb(26, 26, 29) 27.1%, rgb(111, 34, 50) 77.5%);
+  background: url("bg-pattern-circles.svg"),
+    linear-gradient(135.8deg, rgb(26, 26, 29) 27.1%, rgb(111, 34, 50) 77.5%);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-blend-mode:saturation; 
 }
+
+
 
 .profile-container {
   background: #536976;
   /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #292E49, #536976);
+  background: -webkit-linear-gradient(to right, #292e49, #536976);
   /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #292E49, #536976);
+  background: linear-gradient(to right, #292e49, #536976);
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
 }
-
 
 .ql-editor {
   @apply font-100;

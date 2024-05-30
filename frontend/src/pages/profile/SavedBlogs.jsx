@@ -11,7 +11,7 @@ const SavedBlogs = () => {
 
   return (
     <div className="my-5">
-      <span className="font-100 text-3xl pb-0.5 border-b border-black mx-10">
+      <span className="font-300 text-3xl pb-0.5 border-b-2 border-black mx-10">
         Saved Posts:
       </span>
       <div>

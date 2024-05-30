@@ -192,7 +192,15 @@ app.get("/api/v1/auth/me", async (c) => {
           },
         },
         followedBy: true,
-        following: true,
+        following: {
+          include: {
+            posts: {
+              include: {
+                author: true
+              }
+            }
+          }
+        },
       },
     });
 
@@ -452,6 +460,7 @@ app.get("/api/v1/posts/:id", async (c) => {
       },
       include: {
         author: true,
+        savedBy: true
       },
     });
 
