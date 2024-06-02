@@ -34,6 +34,13 @@ const ProfileNav = () => {
     setOpen(true);
   };
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -69,12 +76,12 @@ const ProfileNav = () => {
 
   return (
     <div>
-      <div className="h-[25rem] font-200 profile-container text-white mx-6 rounded-xl mt-3 grid grid-cols-2">
-        <div className="flex flex-col justify-end gap-y-3 p-12">
+      <div className="md:h-[25rem] font-200 profile-container text-white mx-6 rounded-xl mt-3 md:grid grid-cols-2">
+        <div className="flex flex-wrap flex-col justify-center md:justify-end gap-y-3 p-5 md:p-12">
           {profileData && !isProfileLoading ? (
             <>
-              <span className="text-7xl">{profileData.name}</span>
-              <span className="text-3xl">@{profileData.username}</span>
+              <span className="text-3xl md:text-7xl">{profileData.name}</span>
+              <span className="text-xl md:text-3xl">@{profileData.username}</span>
               { currentUserData && currentUserData?.id !== profileData?.id && !isCurrentUser ? (
                 <Button
                   onClick={toggleFollowOrUnfollowFunction}
@@ -107,7 +114,7 @@ const ProfileNav = () => {
             )
           )}
         </div>
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden hidden md:flex">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

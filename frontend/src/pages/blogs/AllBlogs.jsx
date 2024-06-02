@@ -74,6 +74,13 @@ const AllBlogs = () => {
     );
   }
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
   return (
     <div>
       <Blogs posts={posts} isLoading={loading} />

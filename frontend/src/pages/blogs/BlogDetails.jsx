@@ -10,6 +10,7 @@ const BlogDetails = () => {
   const [post, setPost] = useState(null);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [noOfSaves, setNoOfSaves] = useState(0);
 
   const { data, isError, isLoading } = useGetCurrentUserQuery();
 
@@ -26,6 +27,7 @@ const BlogDetails = () => {
           `http://localhost:8787/api/v1/posts/${id}`
         );
         setPost(response.data);
+        setNoOfSaves(response.data.savedBy.length);
       } catch (error) {
         console.log(error);
       }
@@ -78,16 +80,28 @@ const BlogDetails = () => {
     }
   };
 
+  useEffect(() => {
+    if (loading === false) {
+      if (saved === true) {
+        setNoOfSaves((prev) => prev + 1);
+      } else if (saved === false) {
+        setNoOfSaves((prev) => prev - 1);
+      }
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
   return (
     <>
       {post ? (
         <div className="my-14 mx-4 lg:mx-20">
           <div className="flex flex-col items-center font-200">
-            {loading && (
-              <div className="flex justify-center items-center mb-6">
-                <Spinner className="h-8 w-8" />
-              </div>
-            )}
             <div className="flex flex-col items-center md:items-center gap-x-3">
               <span className="text-2xl md:text-4xl font-semibold text-gray-900 text-center">
                 {post.title}
@@ -107,7 +121,9 @@ const BlogDetails = () => {
                     d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
                   />
                 </svg>
-                <span className="text-md font-100 font-semibold">x{post?.savedBy.length}</span>
+                <span className="text-md font-100 font-semibold">
+                  x{noOfSaves}
+                </span>
               </div>
             </div>
             <div className="flex justify-start items-center text-sm font-semibold gap-x-2 text-gray-700 font-200 my-5">
@@ -131,7 +147,7 @@ const BlogDetails = () => {
             <div className="flex justify-center">
               {data && (
                 <Button
-                  className="rounded-full flex items-center gap-x-1 hover:text-black hover:border-black"
+                  className="rounded-full flex items-center gap-x-1 hover:text-black hover:border-black scale-90"
                   variant="outlined"
                   onClick={bookMarkPost}
                 >
@@ -187,7 +203,7 @@ const BlogDetails = () => {
                 </Button>
               )}
             </div>
-            <div className="flex flex-wrap gap-2 md:gap-6 mb-12">
+            <div className="flex flex-wrap gap-2 md:gap-6 mt-6 mb-12">
               {post.tags.map((tag, index) => (
                 <Chip
                   variant="outlined"

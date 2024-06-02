@@ -8,16 +8,26 @@ const ProfileBlogs = () => {
   const { id } = useParams();
   const { data, isLoading } = useGetProfileQuery(id);
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
   return (
     <div className="my-5">
-      <span className="font-300 text-3xl pb-0.5 border-b-2 border-black mx-10">
-        Posts:
-      </span>
+      <div className="text-center">
+        <span className="font-300 font-semibold text-xl md:text-3xl border-b-2 border-black">
+          Posts:
+        </span>
+      </div>
       <div>
         <Blogs posts={data?.posts} isLoading={isLoading} />
         {data?.posts.length === 0 && (
-          <div className="flex justify-center h-52 items-center font-200 text-2xl">
+          <div className="flex flex-col text-center justify-center h-52 items-center font-200 text-lg md:text-2xl">
             <span>You currently have not written any blogs yet!</span>
+            <span className="text-3xl mt-5">(⌐■_■)</span>
           </div>
         )}
       </div>

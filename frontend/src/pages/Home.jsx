@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Blogs from "../components/Blogs";
 import { useGetAllPostsQuery } from "../app/service/socials";
 
 const Home = () => {
   const { data, isError, isLoading } = useGetAllPostsQuery();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
 
   return (
     <div>

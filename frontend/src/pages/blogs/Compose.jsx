@@ -48,10 +48,17 @@ const Compose = () => {
 
   const quillRef = useRef(null);
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
   const handleCustomTag = (e) => {
     if (e.key === "Enter") {
       const { value } = e.target;
-      if (value.trim() !== "") {
+      if (value?.trim() !== "") {
         if (!tags.includes(value)) {
           if (selectedTags.length < 3) {
             const updatedCustomTags = [...customTag, value];
@@ -137,7 +144,7 @@ const Compose = () => {
   }, []);
 
   const imageHandler = () => {
-    const quill = quillRef.current;
+    const quill = quillRef?.current;
     if (!quill) return;
 
     const input = document.createElement("input");
@@ -364,14 +371,14 @@ const Compose = () => {
                 d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
               />
             </svg>
-            <span className="mb-4 text-xl">
+            <span className="mb-4 md:text-xl mx-5 text-center md:mx-0">
               Include a high-quality image in your story to make it more
               inviting to readers.
             </span>
             <Tooltip content="Your preview image" placement="bottom">
               <Button
                 variant="outlined"
-                className="rounded-full outline-none py-2.5 px-3"
+                className="rounded-full outline-none py-2.5 px-3 scale-75 md:scale-100"
               >
                 <label
                   className="flex justify-center items-center my-auto uppercase font-200"
@@ -421,7 +428,7 @@ const Compose = () => {
           disabled={selectedTags.length >= 3}
           className="border-black my-1"
         />
-        <div className="flex gap-x-4 my-2 justify-center flex-wrap">
+        <div className="flex gap-x-4 gap-y-1 my-2 justify-center flex-wrap">
           {customTag.map((tag, index) => (
             <Chip
               variant="ghost"
@@ -433,7 +440,7 @@ const Compose = () => {
           ))}
         </div>
         <span className="text-md font-semibold mt-5">Select tags</span>
-        <div className="flex flex-wrap mx-28 justify-center gap-x-8 gap-y-5 mt-5">
+        <div className="flex flex-wrap md:mx-28 justify-center gap-x-8 gap-y-5 mt-5 w-full">
           {tags.map((tag, index) => (
             <Chip
               key={index}
@@ -446,7 +453,7 @@ const Compose = () => {
             />
           ))}
         </div>
-        <span className="my-10 font-semibold">
+        <span className="my-10 font-semibold text-center mx-2">
           You can select upto 3 tags&nbsp;
           <span className="border-b-2 border-gray-700">
             ({3 - post.tags.length} out of 3 available)
@@ -476,7 +483,7 @@ const Compose = () => {
         {error && <span className="mt-3 text-red-500">{error}</span>}
       </div>
 
-      <div className="w-1/2 py-4 px-8">
+      <div className="md:w-1/2 py-4 px-8">
         <Stepper
           activeStep={activeStep}
           isLastStep={(value) => setIsLastStep(value)}
@@ -486,7 +493,7 @@ const Compose = () => {
           <Step className="h-4 w-4" onClick={() => setActiveStep(1)} />
           <Step className="h-4 w-4" onClick={() => setActiveStep(2)} />
         </Stepper>
-        <div className="mt-16 flex justify-between">
+        <div className="mt-16 flex md:justify-between justify-center gap-x-8 md:gap-x-0">
           <Button
             onClick={handlePrev}
             variant="outlined"
