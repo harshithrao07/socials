@@ -1,18 +1,15 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Blogs from "../../components/Blogs";
 import { useGetProfileQuery } from "../../app/service/socials";
+import { scrollToTop } from "../../helper";
 
 const ProfileBlogs = () => {
   const { id } = useParams();
   const { data, isLoading } = useGetProfileQuery(id);
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    scrollToTop();
   }, []);
 
   return (

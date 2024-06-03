@@ -23,7 +23,7 @@ export const socialsApi = createApi({
 
     getProfile: builder.query({
       query: (id) => ({
-        url: `/api/v1/profile/${id}`,
+        url: `/api/v1/user/${id}`,
         method: "GET",
       }),
     }),

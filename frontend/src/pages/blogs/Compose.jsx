@@ -7,6 +7,8 @@ import axios from "axios";
 import { createPostInput } from "harshithrao07-common-app";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
+import { scrollToTop } from "../../helper";
+import SimpleChatbot from "../../components/Chatbot";
 
 const Compose = () => {
   // S3 Bucket Name
@@ -46,14 +48,11 @@ const Compose = () => {
   const [customTag, setCustomTag] = useState([]);
   const navigate = useNavigate();
 
-  const quillRef = useRef(null);
-
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    scrollToTop();
   }, []);
+
+  const quillRef = useRef(null);
 
   const handleCustomTag = (e) => {
     if (e.key === "Enter") {
@@ -316,7 +315,7 @@ const Compose = () => {
         setLoading(true);
 
         const response = await axios.post(
-          "http://127.0.0.1:8787/api/v1/auth/posts/upload",
+          "http://127.0.0.1:8787/api/v1/auth/post",
           updatedPost,
           {
             headers: {
@@ -501,6 +500,7 @@ const Compose = () => {
           >
             Previous
           </Button>
+          <SimpleChatbot />
           <Button onClick={handleNext} disabled={isLastStep}>
             Next
           </Button>

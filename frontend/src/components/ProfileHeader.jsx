@@ -4,7 +4,7 @@ import {
   useGetCurrentUserQuery,
   useGetProfileQuery,
 } from "../app/service/socials";
-import { followOrUnfollow } from "../helper";
+import { followOrUnfollow, scrollToTop } from "../helper";
 import {
   Button,
   Dialog,
@@ -18,6 +18,7 @@ const ProfileNav = () => {
     data: profileData,
     isLoading: isProfileLoading,
     error: profileError,
+    refetch
   } = useGetProfileQuery(id);
   const { data: currentUserData, error: currentUserError } =
     useGetCurrentUserQuery();
@@ -29,16 +30,18 @@ const ProfileNav = () => {
   const [dialogType, setDialogType] = useState("");
   const [open, setOpen] = useState(false);
 
+
   const handleOpen = (type) => {
     setDialogType(type);
     setOpen(true);
   };
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    refetch();
+  }, [isFollowing])
+
+  useEffect(() => {
+    scrollToTop();
   }, []);
 
   const handleClose = () => {
@@ -81,36 +84,45 @@ const ProfileNav = () => {
           {profileData && !isProfileLoading ? (
             <>
               <span className="text-3xl md:text-7xl">{profileData.name}</span>
-              <span className="text-xl md:text-3xl">@{profileData.username}</span>
-              { currentUserData && currentUserData?.id !== profileData?.id && !isCurrentUser ? (
-                <Button
-                  onClick={toggleFollowOrUnfollowFunction}
-                  color="white"
-                  loading={loading}
-                  className="w-fit rounded-full mt-1"
+              <span className="text-xl md:text-3xl">
+                @{profileData.username}
+              </span>
+              <div>
+                <span
+                  className="mr-5 cursor-pointer"
+                  onClick={() => handleOpen("followers")}
                 >
-                  {isFollowing ? "Unfollow" : "Follow"}
-                </Button>
-              ) : (
-                <div>
-                  <span
-                    className="mr-5 cursor-pointer"
-                    onClick={() => handleOpen("followers")}
+                  {currentUserData?.username === profileData?.username
+                    ? currentUserData?.followedBy.length
+                    : profileData?.followedBy.length}
+                  &nbsp;followers
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => handleOpen("following")}
+                >
+                  {currentUserData?.username === profileData?.username
+                    ? currentUserData?.following.length
+                    : profileData?.following.length}
+                  &nbsp;following
+                </span>
+              </div>
+              {currentUserData &&
+                currentUserData?.id !== profileData?.id &&
+                !isCurrentUser && (
+                  <Button
+                    onClick={toggleFollowOrUnfollowFunction}
+                    color="white"
+                    loading={loading}
+                    className="w-fit rounded-full mt-1"
                   >
-                    {currentUserData?.followedBy.length}&nbsp;followers
-                  </span>
-                  <span
-                    className="cursor-pointer"
-                    onClick={() => handleOpen("following")}
-                  >
-                    {currentUserData?.following.length}&nbsp;following
-                  </span>
-                </div>
-              )}
+                    {isFollowing ? "Unfollow" : "Follow"}
+                  </Button>
+                )}
             </>
           ) : (
             isProfileLoading && (
-              <span className="text-5xl italic">Loading...</span>
+              <span className="text-3xl md:text-5xl italic">Loading...</span>
             )
           )}
         </div>
@@ -133,8 +145,15 @@ const ProfileNav = () => {
         <Dialog open={open} handler={handleOpen} size="xs">
           <DialogHeader className="flex justify-center p-3 font-100 text-lg">
             <span>
-              {dialogType === "followers" ? "Followers" : "Following"}
+              {dialogType === "followers"
+                ? currentUserData?.id === profileData?.id
+                  ? "Your followers"
+                  : `@${profileData?.username}'s followers`
+                : currentUserData?.id === profileData?.id
+                ? "You're following"
+                : `@${profileData?.username}'s following`}
             </span>
+
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -152,9 +171,75 @@ const ProfileNav = () => {
             </svg>
           </DialogHeader>
           <DialogBody className="p-0 font-200">
-            {dialogType === "followers" ? (
-              currentUserData?.followedBy.length > 0 ? (
-                currentUserData?.followedBy.map((follower) => (
+            {currentUserData?.id === profileData?.id ? (
+              dialogType === "followers" ? (
+                currentUserData?.followedBy.length > 0 ? (
+                  currentUserData?.followedBy.map((follower) => (
+                    <Link
+                      to={`/profile/${follower.id}`}
+                      key={follower.id}
+                      onClick={handleClose}
+                      className="outline-none"
+                    >
+                      <div className="flex items-center gap-x-3 py-2.5 px-2 hover:bg-gray-100 rounded-xl">
+                        <div
+                          className={`bg-gray-700 px-4 py-2 rounded-full text-white hover:bg-gray-600 cursor-pointer flex w-fit`}
+                        >
+                          <span className="font-bold">
+                            {follower.name.substring(0, 1).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="flex flex-col justify-center items-center leading-tight text-gray-800">
+                          <span className="font-bold">
+                            @{follower.username}
+                          </span>
+                          <span className="font-normal">{follower.name}</span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="flex justify-center mb-5 flex-col items-center">
+                    <span className="text-black text-center">
+                      You currently have no followers
+                    </span>
+                    <span className="text-black text-2xl">(⁠╥⁠﹏⁠╥⁠)</span>
+                  </div>
+                )
+              ) : currentUserData?.following.length > 0 ? (
+                currentUserData?.following.map((following) => (
+                  <Link
+                    to={`/profile/${following.id}`}
+                    key={following.id}
+                    onClick={handleClose}
+                    className="outline-none"
+                  >
+                    <div className="flex items-center gap-x-3 py-2.5 px-2 hover:bg-gray-100 rounded-xl">
+                      <div
+                        className={`bg-gray-700 px-4 py-2 rounded-full text-white hover:bg-gray-600 cursor-pointer flex w-fit`}
+                      >
+                        <span className="font-bold">
+                          {following.name.substring(0, 1).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="flex flex-col justify-center items-center leading-tight text-gray-800">
+                        <span className="font-bold">@{following.username}</span>
+                        <span className="font-normal">{following.name}</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <div className="flex justify-center mb-5 flex-col items-center">
+                  <span className="text-black text-center">
+                    You currently are not following anyone
+                  </span>
+                  <span className="text-black text-2xl">( ｡ • ᴖ • ｡)</span>
+                </div>
+              )
+            ) : dialogType === "followers" ? (
+              profileData?.followedBy.length > 0 ? (
+                profileData?.followedBy.map((follower) => (
                   <Link
                     to={`/profile/${follower.id}`}
                     key={follower.id}
@@ -178,14 +263,14 @@ const ProfileNav = () => {
                 ))
               ) : (
                 <div className="flex justify-center mb-5 flex-col items-center">
-                  <span className="text-black">
-                    You currently have no followers
+                  <span className="text-black text-center">
+                    @{profileData?.username} currently has no followers
                   </span>
                   <span className="text-black text-2xl">(⁠╥⁠﹏⁠╥⁠)</span>
                 </div>
               )
-            ) : currentUserData?.following.length > 0 ? (
-              currentUserData?.following.map((following) => (
+            ) : profileData?.following.length > 0 ? (
+              profileData?.following.map((following) => (
                 <Link
                   to={`/profile/${following.id}`}
                   key={following.id}
@@ -209,8 +294,8 @@ const ProfileNav = () => {
               ))
             ) : (
               <div className="flex justify-center mb-5 flex-col items-center">
-                <span className="text-black">
-                  You currently are not following anyone
+                <span className="text-black text-center">
+                  @{profileData?.username} currently is not following anyone
                 </span>
                 <span className="text-black text-2xl">( ｡ • ᴖ • ｡)</span>
               </div>

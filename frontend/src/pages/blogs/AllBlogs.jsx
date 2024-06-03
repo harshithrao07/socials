@@ -1,9 +1,9 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button, IconButton } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Blogs from "../../components/Blogs";
+import { fetchAllBlogs, scrollToTop } from "../../helper";
 
 const AllBlogs = () => {
   const POSTS_PER_PAGE = 9; // Number of posts per page
@@ -21,6 +21,10 @@ const AllBlogs = () => {
     onClick: () => setActive(index),
     className: "rounded-full",
   });
+
+  useEffect(() => {
+    scrollToTop();
+  }, []);
 
   const next = () => {
     const nextPage = parseInt(active, 10) + 1;
@@ -43,9 +47,7 @@ const AllBlogs = () => {
       setLoading(true);
 
       try {
-        const response = await axios.get(
-          `http://127.0.0.1:8787/api/v1/posts?page=${active}`
-        );
+        const response = await fetchAllBlogs(active);
         setPosts(response.data);
         // Extract total count from response headers
 
@@ -73,13 +75,6 @@ const AllBlogs = () => {
       </IconButton>
     );
   }
-
-  useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }, []);
 
   return (
     <div>

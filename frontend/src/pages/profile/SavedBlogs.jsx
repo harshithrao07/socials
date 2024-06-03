@@ -1,21 +1,18 @@
 import React, { useEffect } from "react";
 import { useGetCurrentUserQuery } from "../../app/service/socials";
 import Blogs from "../../components/Blogs";
+import { scrollToTop } from "../../helper";
 
 const SavedBlogs = () => {
   const { data, isError, isLoading, refetch } = useGetCurrentUserQuery();
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }, []);
-
-  useEffect(() => {
     refetch();
   }, []);
-
+  
+  useEffect(() => {
+    scrollToTop();
+  }, []);
   return (
     <div className="my-5">
       <div className="text-center">

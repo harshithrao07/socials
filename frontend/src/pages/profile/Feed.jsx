@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useGetCurrentUserQuery } from "../../app/service/socials";
 import { Link } from "react-router-dom";
-import { formatDate } from "../../helper";
+import { formatDate, scrollToTop } from "../../helper";
 
 const Feed = () => {
   const { data, isLoading } = useGetCurrentUserQuery();
@@ -20,10 +20,7 @@ const Feed = () => {
   }, [data]);
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    scrollToTop();
   }, []);
 
   return (

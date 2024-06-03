@@ -1,9 +1,9 @@
 import { Button, Chip, Spinner } from "@material-tailwind/react";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import "quill/dist/quill.snow.css";
 import { useGetCurrentUserQuery } from "../../app/service/socials";
+import { formatDate, getBlog, savePost, scrollToTop } from "../../helper";
 
 const BlogDetails = () => {
   const { id } = useParams();
@@ -23,9 +23,7 @@ const BlogDetails = () => {
   useEffect(() => {
     async function fetchPost() {
       try {
-        const response = await axios.get(
-          `http://localhost:8787/api/v1/posts/${id}`
-        );
+        const response = await getBlog(id);
         setPost(response.data);
         setNoOfSaves(response.data.savedBy.length);
       } catch (error) {
@@ -35,16 +33,6 @@ const BlogDetails = () => {
 
     fetchPost();
   }, []);
-
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-    const formatter = new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-    return formatter.format(date);
-  }
 
   const bookMarkPost = async () => {
     const token = localStorage.getItem("token_socials");
@@ -56,18 +44,7 @@ const BlogDetails = () => {
     if (data) {
       try {
         setLoading(true);
-        const response = await axios.put(
-          "http://localhost:8787/api/v1/auth/posts",
-          {
-            id: post.id,
-            savedBy: data.id,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token_socials")}`,
-            },
-          }
-        );
+        const response = await savePost(post.id, data.id);
 
         if (response.status == 200) {
           setSaved(!saved);
@@ -91,10 +68,7 @@ const BlogDetails = () => {
   }, [loading]);
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    scrollToTop();
   }, []);
 
   return (
@@ -145,9 +119,9 @@ const BlogDetails = () => {
               <span>{formatDate(post.createdAt)}</span>
             </div>
             <div className="flex justify-center">
-              {data && (
+              {data && data.name !== post.author.name && (
                 <Button
-                  className="rounded-full flex items-center gap-x-1 hover:text-black hover:border-black scale-90"
+                  className="rounded-full mb-6 flex items-center gap-x-1 hover:text-black hover:border-black scale-90"
                   variant="outlined"
                   onClick={bookMarkPost}
                 >
@@ -203,7 +177,7 @@ const BlogDetails = () => {
                 </Button>
               )}
             </div>
-            <div className="flex flex-wrap gap-2 md:gap-6 mt-6 mb-12">
+            <div className="flex flex-wrap gap-2 md:gap-6 mb-12">
               {post.tags.map((tag, index) => (
                 <Chip
                   variant="outlined"
