@@ -5,19 +5,20 @@ import { Link } from "react-router-dom";
 import { useGetCurrentUserQuery } from "../app/service/socials";
 import ProfileNav from "./ProfileNav";
 
-function NavList({ data, isLoading }) {
+function NavList({ data, isLoading, handleClick }) {
   return (
     <ul className="my-2 flex justify-center flex-col gap-2 md:mb-0 md:mt-0 md:flex-row items-center md:gap-7 font-200">
-      <Link to="/" className="text-gray-600 hover:text-black text-xl">
+      <Link to="/" className="text-gray-600 hover:text-black text-xl" onClick={handleClick}>
         <span>Home</span>
       </Link>
       <Link
         to="/blogs?page=1"
         className="text-gray-600 hover:text-black text-xl"
+        onClick={handleClick}
       >
         <span>All Blogs</span>
       </Link>
-      <Link to="/blogs/compose" className="w-fit">
+      <Link to="/blogs/compose" className="w-fit" onClick={handleClick}>
         <div className="flex items-center justify-center gap-x-1 text-gray-600 hover:text-black cursor-pointer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +37,7 @@ function NavList({ data, isLoading }) {
           <span className="text-xl">Write</span>
         </div>
       </Link>
-      <div className="hidden md:flex">
+      <div className="hidden md:flex" onClick={handleClick}>
         <ProfileNav data={data} isLoading={isLoading} />
       </div>
     </ul>
@@ -49,6 +50,10 @@ export function NavBar() {
 
   const handleWindowResize = () =>
     window.innerWidth >= 960 && setOpenNav(false);
+
+  const handleClick = () => {
+    setOpenNav(!openNav)
+  }
 
   React.useEffect(() => {
     window.addEventListener("resize", handleWindowResize);
@@ -66,7 +71,7 @@ export function NavBar() {
             variant="text"
             className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent"
             ripple={false}
-            onClick={() => setOpenNav(!openNav)}
+            onClick={handleClick}
           >
             {openNav ? (
               <XMarkIcon className="h-6 w-6" strokeWidth={2} />
@@ -96,7 +101,7 @@ export function NavBar() {
         </div>
       </div>
       <Collapse open={openNav}>
-        <NavList data={data} isLoading={isLoading} />
+        <NavList handleClick={handleClick}  data={data} isLoading={isLoading} />
       </Collapse>
     </Navbar>
   );

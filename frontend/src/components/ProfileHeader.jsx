@@ -18,9 +18,9 @@ const ProfileNav = () => {
     data: profileData,
     isLoading: isProfileLoading,
     error: profileError,
-    refetch
+    refetch,
   } = useGetProfileQuery(id);
-  const { data: currentUserData, error: currentUserError } =
+  const { data: currentUserData, error: currentUserError, refetch: currentUserRefetch } =
     useGetCurrentUserQuery();
   const navigate = useNavigate();
   const token = localStorage.getItem("token_socials");
@@ -30,7 +30,6 @@ const ProfileNav = () => {
   const [dialogType, setDialogType] = useState("");
   const [open, setOpen] = useState(false);
 
-
   const handleOpen = (type) => {
     setDialogType(type);
     setOpen(true);
@@ -38,7 +37,7 @@ const ProfileNav = () => {
 
   useEffect(() => {
     refetch();
-  }, [isFollowing])
+  }, [isFollowing]);
 
   useEffect(() => {
     scrollToTop();
@@ -54,7 +53,7 @@ const ProfileNav = () => {
       if (!isCurrentUser) {
         setLoading(true);
         setIsFollowing(
-          currentUserData.following.some((user) => user.id === id)
+          currentUserData.following.some((user) => user.followingId === id)
         );
         setLoading(false);
       }
@@ -68,7 +67,10 @@ const ProfileNav = () => {
     }
     setLoading(true);
     await followOrUnfollow(id).then(() => {
-      setIsFollowing((prev) => !prev);
+      currentUserRefetch();
+      setIsFollowing(
+        currentUserData.following.some((user) => user.followingId === id)
+      );
     });
     setLoading(false);
   };
@@ -93,8 +95,8 @@ const ProfileNav = () => {
                   onClick={() => handleOpen("followers")}
                 >
                   {currentUserData?.username === profileData?.username
-                    ? currentUserData?.followedBy.length
-                    : profileData?.followedBy.length}
+                    ? currentUserData?.followers.length
+                    : profileData?.followers.length}
                   &nbsp;followers
                 </span>
                 <span
@@ -173,10 +175,10 @@ const ProfileNav = () => {
           <DialogBody className="p-0 font-200">
             {currentUserData?.id === profileData?.id ? (
               dialogType === "followers" ? (
-                currentUserData?.followedBy.length > 0 ? (
-                  currentUserData?.followedBy.map((follower) => (
+                currentUserData?.followers.length > 0 ? (
+                  currentUserData?.followers.map((follower) => (
                     <Link
-                      to={`/profile/${follower.id}`}
+                      to={`/profile/${follower.followerId}`}
                       key={follower.id}
                       onClick={handleClose}
                       className="outline-none"
@@ -186,14 +188,18 @@ const ProfileNav = () => {
                           className={`bg-gray-700 px-4 py-2 rounded-full text-white hover:bg-gray-600 cursor-pointer flex w-fit`}
                         >
                           <span className="font-bold">
-                            {follower.name.substring(0, 1).toUpperCase()}
+                            {follower.follower.name
+                              .substring(0, 1)
+                              .toUpperCase()}
                           </span>
                         </div>
                         <div className="flex flex-col justify-center items-center leading-tight text-gray-800">
                           <span className="font-bold">
-                            @{follower.username}
+                            @{follower.follower.username}
                           </span>
-                          <span className="font-normal">{follower.name}</span>
+                          <span className="font-normal">
+                            {follower.follower.name}
+                          </span>
                         </div>
                       </div>
                     </Link>
@@ -209,7 +215,7 @@ const ProfileNav = () => {
               ) : currentUserData?.following.length > 0 ? (
                 currentUserData?.following.map((following) => (
                   <Link
-                    to={`/profile/${following.id}`}
+                    to={`/profile/${following.followingId}`}
                     key={following.id}
                     onClick={handleClose}
                     className="outline-none"
@@ -219,12 +225,18 @@ const ProfileNav = () => {
                         className={`bg-gray-700 px-4 py-2 rounded-full text-white hover:bg-gray-600 cursor-pointer flex w-fit`}
                       >
                         <span className="font-bold">
-                          {following.name.substring(0, 1).toUpperCase()}
+                          {following.following.name
+                            .substring(0, 1)
+                            .toUpperCase()}
                         </span>
                       </div>
                       <div className="flex flex-col justify-center items-center leading-tight text-gray-800">
-                        <span className="font-bold">@{following.username}</span>
-                        <span className="font-normal">{following.name}</span>
+                        <span className="font-bold">
+                          @{following.following.username}
+                        </span>
+                        <span className="font-normal">
+                          {following.following.name}
+                        </span>
                       </div>
                     </div>
                   </Link>
@@ -238,10 +250,10 @@ const ProfileNav = () => {
                 </div>
               )
             ) : dialogType === "followers" ? (
-              profileData?.followedBy.length > 0 ? (
-                profileData?.followedBy.map((follower) => (
+              profileData?.followers.length > 0 ? (
+                profileData?.followers.map((follower) => (
                   <Link
-                    to={`/profile/${follower.id}`}
+                    to={`/profile/${follower.followerId}`}
                     key={follower.id}
                     onClick={handleClose}
                     className="outline-none"
@@ -251,12 +263,16 @@ const ProfileNav = () => {
                         className={`bg-gray-700 px-4 py-2 rounded-full text-white hover:bg-gray-600 cursor-pointer flex w-fit`}
                       >
                         <span className="font-bold">
-                          {follower.name.substring(0, 1).toUpperCase()}
+                          {follower.follower.name.substring(0, 1).toUpperCase()}
                         </span>
                       </div>
                       <div className="flex flex-col justify-center items-center leading-tight text-gray-800">
-                        <span className="font-bold">@{follower.username}</span>
-                        <span className="font-normal">{follower.name}</span>
+                        <span className="font-bold">
+                          @{follower.follower.username}
+                        </span>
+                        <span className="font-normal">
+                          {follower.follower.name}
+                        </span>
                       </div>
                     </div>
                   </Link>
@@ -272,7 +288,7 @@ const ProfileNav = () => {
             ) : profileData?.following.length > 0 ? (
               profileData?.following.map((following) => (
                 <Link
-                  to={`/profile/${following.id}`}
+                  to={`/profile/${following.followingId}`}
                   key={following.id}
                   onClick={handleClose}
                   className="outline-none"
@@ -282,12 +298,16 @@ const ProfileNav = () => {
                       className={`bg-gray-700 px-4 py-2 rounded-full text-white hover:bg-gray-600 cursor-pointer flex w-fit`}
                     >
                       <span className="font-bold">
-                        {following.name.substring(0, 1).toUpperCase()}
+                        {following.following.name.substring(0, 1).toUpperCase()}
                       </span>
                     </div>
                     <div className="flex flex-col justify-center items-center leading-tight text-gray-800">
-                      <span className="font-bold">@{following.username}</span>
-                      <span className="font-normal">{following.name}</span>
+                      <span className="font-bold">
+                        @{following.following.username}
+                      </span>
+                      <span className="font-normal">
+                        {following.following.name}
+                      </span>
                     </div>
                   </div>
                 </Link>

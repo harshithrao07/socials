@@ -64,10 +64,8 @@ input {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  background-blend-mode:saturation; 
+  background-blend-mode: saturation;
 }
-
-
 
 .profile-container {
   background: #536976;
@@ -101,9 +99,28 @@ input {
   @apply bg-gray-100 p-4 border-l-4 border-gray-500 italic;
 }
 
+.ql-editor {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 0 !important;
+  }
+}
+
 /* Ordered list default style */
 .ql-editor ol {
   @apply list-decimal pl-4 text-lg;
+}
+
+.ql-editor img {
+  width: 50%; /* Half the container width */
+  max-width: 100%; /* Ensure images do not exceed container width */
+  height: auto; /* Maintain aspect ratio */
+  display: block; /* Ensure proper display as block element */
+  margin: auto; /* Center align if needed */
 }
 
 /* Bullet list default style */

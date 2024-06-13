@@ -32,7 +32,7 @@ protectedRouter.use("*", async (c, next) => {
         message: "Unauthorized",
       });
     }
-    c.set("userId", payload.id);
+    c.set("userId", payload.id as string);
     await next();
   } catch (error) {
     c.status(500);
@@ -61,15 +61,48 @@ protectedRouter.get("/me", async (c) => {
         username: true,
         savedPosts: {
           include: {
-            author: true,
+            post: {
+              include: {
+                author: {
+                  select: {
+                    id: true,
+                    email: true,
+                    username: true,
+                    name: true,
+                  }
+                },
+              },
+            },
           },
         },
-        followedBy: true,
+        followers: {
+          include: {
+            follower: {
+              select: {
+                id: true,
+                email: true,
+                username: true,
+                name: true,
+              }
+            },
+          },
+        },
         following: {
           include: {
-            posts: {
+            following: {
               include: {
-                author: true,
+                posts: {
+                  include: {
+                    author: {
+                      select: {
+                        id: true,
+                        email: true,
+                        username: true,
+                        name: true,
+                      }
+                    },
+                  },
+                },
               },
             },
           },
@@ -150,38 +183,96 @@ protectedRouter.put("/post", async (c) => {
       return c.json({ message: "Post not found" });
     }
 
-    // Check if the userId is already in the savedBy array
-    const isUserSaved = existingPost.savedBy.some(
-      (user) => user.id === body.savedBy
-    );
+    const updatedPost = await prisma.post.update({
+      where: { id: body.id },
+      data: {
+        title: body.title,
+        content: body.content,
+        tags: body.tags,
+        imagePreview: body.imagePreview,
+      },
+    });
 
-    let updatedPost;
-    if (isUserSaved) {
-      // Disconnect the userId
-      updatedPost = await prisma.post.update({
-        where: { id: body.id },
-        data: {
-          title: body.title,
-          content: body.content,
-          imagePreview: body.imagePreview,
-          tags: body.tags,
-          savedBy: {
-            disconnect: { id: body.savedBy },
-          },
+    return c.json({
+      id: updatedPost.id,
+    });
+  } catch (error) {
+    c.status(422);
+    return c.json({ message: "Error while updating post" });
+  }
+});
+
+protectedRouter.put("/user/:id/follows", async (c) => {
+  const profileId = c.req.param("id");
+  const userId = c.get("userId");
+  try {
+    const prisma = new PrismaClient({
+      datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    // Check if the user is already following the profile
+    const isFollowing = await prisma.userFollows.findFirst({
+      where: {
+        followerId: userId,
+        followingId: profileId,
+      },
+    });
+
+    let response;
+
+    if (isFollowing) {
+      // If the user is already following, unfollow
+      response = await prisma.userFollows.delete({
+        where: {
+          id: isFollowing.id,
         },
       });
     } else {
-      // Connect the userId
-      updatedPost = await prisma.post.update({
-        where: { id: body.id },
+      // If the user is not following, follow
+      response = await prisma.userFollows.create({
         data: {
-          title: body.title,
-          content: body.content,
-          imagePreview: body.imagePreview,
-          tags: body.tags,
-          savedBy: {
-            connect: { id: body.savedBy },
-          },
+          followerId: userId,
+          followingId: profileId,
+        },
+      });
+    }
+    c.status(200);
+    return c.json({ response });
+  } catch (error) {
+    c.status(422);
+    return c.json({ message: "Could not follow/unfollow the profile" });
+  }
+});
+
+protectedRouter.put("/post/:id/save", async (c) => {
+  const postId = c.req.param("id");
+  const userId = c.get("userId");
+
+  try {
+    const prisma = new PrismaClient({
+      datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    // Check if the userId is already in the savedBy array
+    const isUserSaved = await prisma.userSavedPost.findFirst({
+      where: {
+        userId: userId,
+        postId: postId,
+      },
+    });
+
+    let updatedPost;
+    if (isUserSaved) {
+      updatedPost = await prisma.userSavedPost.delete({
+        where: {
+          id: isUserSaved.id,
+        },
+      });
+    } else {
+      updatedPost = await prisma.userSavedPost.create({
+        data: {
+          userId: userId,
+          postId: postId,
         },
       });
     }
@@ -194,92 +285,3 @@ protectedRouter.put("/post", async (c) => {
     return c.json({ message: "Error while updating post" });
   }
 });
-
-
-protectedRouter.put("/user/:id", async (c) => {
-    const profileId = c.req.param("id");
-    const userId = c.get("userId");
-  
-    try {
-      const prisma = new PrismaClient({
-        datasourceUrl: c.env?.DATABASE_URL,
-      }).$extends(withAccelerate());
-  
-      // Check if the user is already following the profile
-      const isFollowing = await prisma.user.findFirst({
-        where: {
-          id: userId,
-          following: {
-            some: {
-              id: profileId,
-            },
-          },
-        },
-      });
-  
-      let response;
-  
-      if (isFollowing) {
-        // If the user is already following, unfollow
-        response = await Promise.all([
-          prisma.user.update({
-            where: {
-              id: profileId,
-            },
-            data: {
-              followedBy: {
-                disconnect: {
-                  id: userId,
-                },
-              },
-            },
-          }),
-          prisma.user.update({
-            where: {
-              id: userId,
-            },
-            data: {
-              following: {
-                disconnect: {
-                  id: profileId,
-                },
-              },
-            },
-          }),
-        ]);
-      } else {
-        // If the user is not following, follow
-        response = await Promise.all([
-          prisma.user.update({
-            where: {
-              id: profileId,
-            },
-            data: {
-              followedBy: {
-                connect: {
-                  id: userId,
-                },
-              },
-            },
-          }),
-          prisma.user.update({
-            where: {
-              id: userId,
-            },
-            data: {
-              following: {
-                connect: {
-                  id: profileId,
-                },
-              },
-            },
-          }),
-        ]);
-      }
-  
-      c.status(200);
-      return c.json({ response });
-    } catch (error) {
-      return c.json({ message: "Could not follow/unfollow the profile" });
-    }
-  });

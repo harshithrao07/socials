@@ -12,6 +12,7 @@ import ProfileBlogs from "./pages/profile/ProfileBlogs";
 import RouteError from "./RouteError";
 import SavedBlogs from "./pages/profile/SavedBlogs";
 import Feed from "./pages/profile/Feed";
+import EditBlog from "./pages/blogs/EditBlog";
 
 const App = () => {
   return (
@@ -24,11 +25,12 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/blogs" element={<AllBlogs />} />
             <Route path="/blogs/:id" element={<BlogDetails />} />
+            <Route path="/edit/:id" element={<EditBlog />} />
             <Route path="/blogs/compose" element={<Compose />} />
             <Route path="/profile/:id" element={<ProfileHeader />}>
               <Route index element={<ProfileBlogs />} />
               <Route path="saved" element={<SavedBlogs />} />
-              <Route path="feed" element={<Feed />} />              
+              <Route path="feed" element={<Feed />} />
             </Route>
             <Route path="*" element={<RouteError />} />
           </Route>

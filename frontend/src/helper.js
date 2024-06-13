@@ -38,7 +38,7 @@ export async function fetchQuote() {
 
 export async function signUpUser(signupBody) {
   const response = await axios.post(
-    "http://localhost:8787/api/v1/user/signup",
+    "https://backend.backend-harshithrao07.workers.dev/api/v1/user/signup",
     signupBody
   );
   return response;
@@ -46,7 +46,7 @@ export async function signUpUser(signupBody) {
 
 export async function signInUser(signinBody) {
   const response = await axios.post(
-    "http://localhost:8787/api/v1/user/signin",
+    "https://backend.backend-harshithrao07.workers.dev/api/v1/user/signin",
     signinBody
   );
   return response;
@@ -54,7 +54,7 @@ export async function signInUser(signinBody) {
 
 export async function fetchAllBlogs(active) {
   const response = await axios.get(
-    `http://127.0.0.1:8787/api/v1/posts?page=${active}`
+    `https://backend.backend-harshithrao07.workers.dev/api/v1/posts?page=${active}`
   );
   return response;
 }
@@ -64,26 +64,24 @@ export async function getBlog(id) {
   return response;
 }
 
-export async function savePost(toSave, savedBy) {
+export async function savePost(toSave) {
   const response = await axios.put(
-    "http://localhost:8787/api/v1/auth/post",
-    {
-      id: toSave,
-      savedBy: savedBy,
-    },
+    `http://localhost:8787/api/v1/auth/post/${toSave}/save`,
+    {},
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token_socials")}`,
       },
     }
   );
+  console.log(response)
   return response;
 }
 
 export async function followOrUnfollow(toFollow) {
   try {
     const response = await axios.put(
-      `http://localhost:8787/api/v1/auth/user/${toFollow}`,
+      `http://localhost:8787/api/v1/auth/user/${toFollow}/follows`,
       {},
       {
         headers: {
@@ -91,7 +89,25 @@ export async function followOrUnfollow(toFollow) {
         },
       }
     );
+    console.log(response);
   } catch (error) {
     console.error("Error following/unfollowing user:", error);
+  }
+}
+
+export async function updateBlog(updatedBlog) {
+  try {
+    const response = await axios.put(
+      "https://backend.backend-harshithrao07.workers.dev/api/v1/auth/post",
+      updatedBlog,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token_socials")}`,
+        },
+      }
+    );
+    console.log(response);
+  } catch (error) {
+    console.error("Error saving blog: ", error);
   }
 }

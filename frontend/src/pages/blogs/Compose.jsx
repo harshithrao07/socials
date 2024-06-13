@@ -184,6 +184,13 @@ const Compose = () => {
           // Insert the uploaded image into the Quill editor
           const range = quill.getSelection();
           quill.insertEmbed(range ? range.index : 0, "image", imageUrl);
+
+          // Update post content immediately after inserting image
+          const content = quill.root.innerHTML.trim();
+          setPost((prevPost) => ({
+            ...prevPost,
+            content: content,
+          }));
         } catch (error) {
           console.error("Error uploading image:", error);
         }
@@ -263,6 +270,8 @@ const Compose = () => {
   };
 
   const displayImage = (e) => {
+
+    
     const file = e.target.files[0];
     const reader = new FileReader();
     setFileImage(file);
@@ -315,7 +324,7 @@ const Compose = () => {
         setLoading(true);
 
         const response = await axios.post(
-          "http://127.0.0.1:8787/api/v1/auth/post",
+          "https://backend.backend-harshithrao07.workers.dev/api/v1/auth/post",
           updatedPost,
           {
             headers: {
@@ -344,7 +353,7 @@ const Compose = () => {
           placeholder="Title"
           className="border-none text-4xl mb-4 outline-none py-3 px-5 blog-input w-full"
         />
-        <div ref={quillRef} className="h-96 text-2xl font-100" />
+        <div ref={quillRef} className="h-96 text-md font-100" />
       </div>
 
       <div className={`${activeStep !== 1 && "hidden"}`}>
@@ -500,12 +509,12 @@ const Compose = () => {
           >
             Previous
           </Button>
-          <SimpleChatbot />
           <Button onClick={handleNext} disabled={isLastStep}>
             Next
           </Button>
         </div>
       </div>
+      <SimpleChatbot />
     </div>
   );
 };

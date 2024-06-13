@@ -16,7 +16,7 @@ const BlogDetails = () => {
 
   useEffect(() => {
     if (data && post) {
-      data.savedPosts.map((blog) => blog.id === post.id && setSaved(true));
+      data.savedPosts.map((blog) => blog.post.id === post.id && setSaved(true));
     }
   }, [data, post]);
 
@@ -44,7 +44,7 @@ const BlogDetails = () => {
     if (data) {
       try {
         setLoading(true);
-        const response = await savePost(post.id, data.id);
+        const response = await savePost(post.id);
 
         if (response.status == 200) {
           setSaved(!saved);
@@ -70,7 +70,7 @@ const BlogDetails = () => {
   useEffect(() => {
     scrollToTop();
   }, []);
-
+  
   return (
     <>
       {post ? (
@@ -119,7 +119,7 @@ const BlogDetails = () => {
               <span>{formatDate(post.createdAt)}</span>
             </div>
             <div className="flex justify-center">
-              {data && data.name !== post.author.name && (
+              {data && data.name !== post.author.name ? (
                 <Button
                   className="rounded-full mb-6 flex items-center gap-x-1 hover:text-black hover:border-black scale-90"
                   variant="outlined"
@@ -175,9 +175,13 @@ const BlogDetails = () => {
                     </>
                   )}
                 </Button>
+              ) : (
+                <Link to={`/edit/${post.id}`}>
+                  <Button>Edit</Button>
+                </Link>
               )}
             </div>
-            <div className="flex flex-wrap gap-2 md:gap-6 mb-12">
+            <div className="flex flex-wrap gap-2 md:gap-6 mb-12 mt-4">
               {post.tags.map((tag, index) => (
                 <Chip
                   variant="outlined"
@@ -190,9 +194,10 @@ const BlogDetails = () => {
             <img
               src={post.imagePreview}
               alt={post.title}
-              className="rounded-lg w-full md:w-3/4"
+              className="object-cover rounded-lg w-1/2 max-w-full h-auto"
             />
           </div>
+
           <div
             className="ql-editor my-5"
             dangerouslySetInnerHTML={{ __html: post.content }}

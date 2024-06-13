@@ -149,11 +149,40 @@ userRouter.get("/:id", async (c) => {
         username: true,
         posts: {
           include: {
-            author: true,
+            author: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+                username: true,
+              },
+            },
           },
         },
-        followedBy: true,
-        following: true
+        followers: {
+          include: {
+            follower: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+                username: true,
+              },
+            },
+          },
+        },
+        following: {
+          include: {
+            following: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+                username: true,
+              },
+            },
+          },
+        },
       },
     });
 

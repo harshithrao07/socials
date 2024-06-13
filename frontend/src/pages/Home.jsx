@@ -116,16 +116,18 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="hidden md:flex md:flex-col">
-        <div className="flex justify-center">
-          <span className="text-2xl md:text-4xl w-fit font-300 font-bold text-center my-2">
-            Check out the blogs
-          </span>
+      {data && data.length && (
+        <div className="hidden md:flex md:flex-col">
+          <div className="flex justify-center">
+            <span className="text-2xl md:text-4xl w-fit font-300 font-bold text-center my-2">
+              Check out the blogs
+            </span>
+          </div>
+          <div className="mb-4">
+            <Blogs posts={data.slice(0, 3)} isLoading={isLoading} from="Home" />
+          </div>
         </div>
-        <div className="mb-4">
-          <Blogs posts={data?.slice(0, 3)} isLoading={isLoading} from="Home" />
-        </div>
-      </div>
+      )}
     </div>
   );
 };

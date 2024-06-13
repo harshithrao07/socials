@@ -39,7 +39,6 @@ const Signup = () => {
   };
 
   const handleSubmit = async (event) => {
-    console.log("Inside handle submit");
     event.preventDefault();
 
     try {
