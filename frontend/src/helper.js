@@ -60,13 +60,13 @@ export async function fetchAllBlogs(active) {
 }
 
 export async function getBlog(id) {
-  const response = await axios.get(`http://localhost:8787/api/v1/posts/${id}`);
+  const response = await axios.get(`https://backend.backend-harshithrao07.workers.dev/api/v1/posts/${id}`);
   return response;
 }
 
 export async function savePost(toSave) {
   const response = await axios.put(
-    `http://localhost:8787/api/v1/auth/post/${toSave}/save`,
+    `https://backend.backend-harshithrao07.workers.dev/api/v1/auth/post/${toSave}/save`,
     {},
     {
       headers: {
@@ -81,7 +81,7 @@ export async function savePost(toSave) {
 export async function followOrUnfollow(toFollow) {
   try {
     const response = await axios.put(
-      `http://localhost:8787/api/v1/auth/user/${toFollow}/follows`,
+      `https://backend.backend-harshithrao07.workers.dev/api/v1/auth/user/${toFollow}/follows`,
       {},
       {
         headers: {
@@ -106,7 +106,8 @@ export async function updateBlog(updatedBlog) {
         },
       }
     );
-    console.log(response);
+
+    return response;
   } catch (error) {
     console.error("Error saving blog: ", error);
   }

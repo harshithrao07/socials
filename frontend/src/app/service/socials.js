@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const socialsApi = createApi({
   reducerPath: "socials",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8787/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "https://backend.backend-harshithrao07.workers.dev/" }),
   endpoints: (builder) => ({
     getCurrentUser: builder.query({
       query: () => ({

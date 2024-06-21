@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
 import AWS from "aws-sdk";
@@ -20,6 +20,8 @@ const EditBlogPage = () => {
   const quillRef = useRef(null);
   const quillInstance = useRef(null);
   const [fileImage, setFileImage] = useState(null);
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchPost() {
@@ -162,56 +164,69 @@ const EditBlogPage = () => {
 
   const saveChanges = async () => {
     try {
+      setLoading(true);
       let imageUrl;
       if (image) {
         imageUrl = await handleImageUpload();
       }
-      
-      await updateBlog({id, title, content: editorHtml, tags, imagePreview: imageUrl }); // Replace with actual API call to update blog post content
+
+      const res = await updateBlog({
+        id,
+        title,
+        content: editorHtml,
+        tags,
+        imagePreview: imageUrl,
+      }); 
+
+      if(res.status == 200) [
+        navigate(`/blogs/${res.data.id}`)
+      ]
     } catch (error) {
       console.error("Error saving changes:", error);
+    } finally {
+      setLoading(true);
     }
   };
 
   const handleImageUpload = async () => {
-    const extension = fileImage.name.split(".")[1];
-    let name = fileImage.name.split(".")[0];
-    name = name.replace(/\s+/g, ""); // Remove all white spaces
+    if (fileImage) {
+      const extension = fileImage.name.split(".")[1];
+      let name = fileImage.name.split(".")[0];
+      name = name.replace(/\s+/g, ""); // Remove all white spaces
 
-    const key = `${uuidv4()}${name}.${extension}`;
-    const imageUrl = `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com/${key}`;
+      const key = `${uuidv4()}${name}.${extension}`;
+      const imageUrl = `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com/${key}`;
 
-    // S3 Credentials
-    AWS.config.update({
-      accessKeyId: process.env.accessKeyId,
-      secretAccessKey: process.env.secretAccessKey,
-    });
+      // S3 Credentials
+      AWS.config.update({
+        accessKeyId: process.env.accessKeyId,
+        secretAccessKey: process.env.secretAccessKey,
+      });
 
-    // Files Parameters
-    const params = {
-      Bucket: S3_BUCKET,
-      Key: key,
-      Body: fileImage,
-    };
+      // Files Parameters
+      const params = {
+        Bucket: S3_BUCKET,
+        Key: key,
+        Body: fileImage,
+      };
 
-    const s3 = new AWS.S3({
-      params: { Bucket: S3_BUCKET },
-      region: REGION,
-    });
+      const s3 = new AWS.S3({
+        params: { Bucket: S3_BUCKET },
+        region: REGION,
+      });
 
-    try {
-      await s3.putObject(params).promise();
-      setImage(imageUrl);
-      console.log("Image uploaded successfully.");
-      return imageUrl;
-    } catch (error) {
-      console.error("Error uploading image:", error);
+      try {
+        await s3.putObject(params).promise();
+        setImage(imageUrl);
+        console.log("Image uploaded successfully.");
+        return imageUrl;
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     }
   };
 
   const displayImage = (e) => {
-
-    
     const file = e.target.files[0];
     const reader = new FileReader();
     setFileImage(file);
@@ -288,7 +303,7 @@ const EditBlogPage = () => {
             </div>
           )}
 
-          {(
+          {
             <div className="flex flex-col justify-center items-center text-gray-600">
               <Tooltip content="Your preview image" placement="bottom">
                 <Button
@@ -325,9 +340,9 @@ const EditBlogPage = () => {
                 onChange={(e) => displayImage(e)}
               />
             </div>
-          )}
+          }
         </div>
-        <Button onClick={saveChanges}>Save Changes</Button>
+        <Button loading={loading} onClick={saveChanges}>Save Changes</Button>
       </div>
     </div>
   );

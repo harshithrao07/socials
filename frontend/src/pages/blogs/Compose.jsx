@@ -336,7 +336,7 @@ const Compose = () => {
         setLoading(false);
 
         if (response.status === 200) {
-          navigate("/");
+          navigate(`/blogs/${response.data.id}`);
         }
       }
     } catch (error) {}
