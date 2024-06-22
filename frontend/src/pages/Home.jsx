@@ -48,7 +48,7 @@ const Home = () => {
               Introducing an extensible editor
             </span>
             <span className="font-200 text-gray-600 mb-16 mt-2 text-center md:text-left">
-              Blogr features an exceedingly intuitive interface which lets you
+              Socials features an exceedingly intuitive interface which lets you
               focus on one thing: creating content. The editor supports
               management of multiple blogs and allows easy manipulation of
               embeds such as images.
@@ -75,36 +75,38 @@ const Home = () => {
 
         <div className="title-container text-white md:rounded-ss-full md:rounded-ee-full p-10 md:p-20 flex flex-col text-center items-center my-16">
           <span className="text-4xl w-fit font-300 font-semibold text-center">
-            State of the Art Infrastructure
+            Advanced AI Integration
           </span>
           <span className="font-200 mt-5 text-center mx-4 md:mx-24">
-            With reliability and speed in mind, worldwide data centers provide
-            the backbone for ultra-fast connectivity. This ensures your site
-            will load instantly, no matter where your readers are, keeping your
-            site competitive.
+            Harness the power of AI with Socials' integrated tools for content
+            generation. AI-driven features streamline your workflow, provide
+            insightful recommendations, and optimize content performance,
+            empowering you to create impactful stories effortlessly.
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden my-10">
           <div className="flex justify-center flex-col px-4 md:pl-20 leading-6">
             <span className="text-2xl font-300 font-semibold text-center md:text-left">
-              Free, open, simple
+              Effortless customization
             </span>
             <span className="font-200 text-gray-600 mb-16 mt-2 text-center md:text-left">
-              Blogr is a free application. It supports features such as code
-              syntax highlighting, RSS feeds, social media integration,
-              third-party commenting tools, and works seamlessly with Google
-              Analytics. The architecture is clean and is relatively easy to
-              learn.
+              Tailor your blog with ease using Socials' intuitive customization
+              tools. Whether it's adjusting layouts, colors, or fonts, you have
+              the flexibility to create a unique online presence that reflects
+              your style and personality.
             </span>
 
             <span className="text-2xl font-300 font-semibold text-center md:text-left">
-              Powerful tooling
+              Accessible and User-Friendly
             </span>
             <span className="font-200 text-gray-600 mt-2 text-center md:text-left">
-              Batteries included. We built a simple and straightforward CLI tool
-              that makes customization and deployment a breeze, but capable of
-              producing even the most complicated sites.
+              Socials is designed to be accessible and user-friendly, offering a
+              seamless experience for both novice and experienced bloggers
+              alike. Its user-centric interface ensures that creating and
+              managing content is straightforward, allowing you to focus on what
+              matters most, sharing your ideas and connecting with readers
+              around the world.
             </span>
           </div>
           <div className="flex justify-center md:justify-end relative md:left-24 mt-5 md:mt-0">

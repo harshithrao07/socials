@@ -85,7 +85,7 @@ export function NavBar() {
           <div className="flex items-center">
             <img
               className="w-7 md:w-12"
-              src="/src/assets/logo.png"
+              src="logo.png"
               alt="logo"
             />
             <span className="ml-1.5 uppercase font-100 text-xl md:text-3xl font-light">
