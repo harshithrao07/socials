@@ -77,7 +77,7 @@ input {
 }
 
 .ql-editor {
-  @apply font-100;
+  @apply font-300;
 }
 
 .ql-editor p {
