@@ -62,6 +62,7 @@ Start the server
 ![](./frontend/public/screenshots/s-1.png)
 ![](./frontend/public/screenshots/s-2.png)
 ![](./frontend/public/screenshots/s-3.png)
+![](./frontend/public/screenshots/s-6.png)
 ![](./frontend/public/screenshots/s-4.png)
 ![](./frontend/public/screenshots/s-5.png)
 
