@@ -9,7 +9,7 @@ export function FooterWithSitemap() {
       <div className="border-t-2 border-black mx-8  md:py-2 flex justify-center md:justify-start">
         <Link to="/">
           <div className="flex items-center">
-            <img className="w-12" src="/src/assets/logo.png" alt="logo" />
+            <img className="w-12" src="logo.png" alt="logo" />
             <span className="ml-1.5 uppercase font-100 text-3xl font-light">
               Socials
             </span>
