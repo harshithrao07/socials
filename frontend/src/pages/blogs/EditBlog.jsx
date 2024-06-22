@@ -7,9 +7,6 @@ import { v4 as uuidv4 } from "uuid";
 import { getBlog, scrollToTop, updateBlog } from "../../helper"; // Replace with actual API functions
 import { Button, Tooltip } from "@material-tailwind/react";
 
-const S3_BUCKET = "socialsbucket";
-const REGION = "ap-south-1";
-
 const EditBlogPage = () => {
   const { id } = useParams();
   const [title, setTitle] = useState("");
@@ -20,8 +17,11 @@ const EditBlogPage = () => {
   const quillRef = useRef(null);
   const quillInstance = useRef(null);
   const [fileImage, setFileImage] = useState(null);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const S3_BUCKET = "socialsbucket";
+  const REGION = "ap-south-1";
 
   useEffect(() => {
     async function fetchPost() {
@@ -176,11 +176,9 @@ const EditBlogPage = () => {
         content: editorHtml,
         tags,
         imagePreview: imageUrl,
-      }); 
+      });
 
-      if(res.status == 200) [
-        navigate(`/blogs/${res.data.id}`)
-      ]
+      if (res.status == 200) [navigate(`/blogs/${res.data.id}`)];
     } catch (error) {
       console.error("Error saving changes:", error);
     } finally {
@@ -342,7 +340,9 @@ const EditBlogPage = () => {
             </div>
           }
         </div>
-        <Button loading={loading} onClick={saveChanges}>Save Changes</Button>
+        <Button loading={loading} onClick={saveChanges}>
+          Save Changes
+        </Button>
       </div>
     </div>
   );
