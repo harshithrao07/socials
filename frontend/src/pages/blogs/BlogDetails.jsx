@@ -70,7 +70,7 @@ const BlogDetails = () => {
   useEffect(() => {
     scrollToTop();
   }, []);
-  
+
   return (
     <>
       {post ? (
@@ -175,10 +175,12 @@ const BlogDetails = () => {
                     </>
                   )}
                 </Button>
-              ) : (
+              ) : localStorage.getItem("socials_token") ? (
                 <Link to={`/edit/${post.id}`}>
                   <Button>Edit</Button>
                 </Link>
+              ) : (
+                <></>
               )}
             </div>
             <div className="flex flex-wrap gap-2 md:gap-6 mb-12 mt-4">
