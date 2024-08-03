@@ -6,7 +6,7 @@ Socials is a dynamic blogging platform that combines the essence of social media
 
 ## Features
 
-- **Advanced AI Integration:** Leverage Google Gemini for AI support, enabling powerful content generation, editing assistance, and analytics.
+- **Advanced AI Integration:** Leverage Google Gemini for AI support, enabling powerful content generation and editing assistance
 - **Serverless Backend:** Built on Cloudflare Workers using Hono JS, ensuring scalable and performant backend operations.
 - **Efficient Database Management:** Utilizes Prisma with connection pooling for fast and reliable database operations.
 - **Customization:** Tailor your blog with ease using Quill.js for intuitive content editing and styling.
